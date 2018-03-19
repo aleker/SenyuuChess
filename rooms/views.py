@@ -5,9 +5,21 @@ from django.contrib import messages
 from rooms.models import Room
 
 
+def create_session_key(request):
+    if not request.session.exists(request.session.session_key):
+        request.session.create()
+
+
 class RoomListView(ListView):
     model = Room
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # TODO remove creating session key from this place
+        create_session_key(self.request)
+        return context
 
 
 class RoomCreate(CreateView):

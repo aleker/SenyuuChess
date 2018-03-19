@@ -29,6 +29,10 @@ from django.db import models
 # ForeignKey:
 # A many-to-one relationship.
 # ForeignKey.on_delete - decide what happens when an object referenced by a ForeignKey is deleted
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from rooms.models import Room
 
 
 class AbstractChessPiece(models.Model):
@@ -57,7 +61,7 @@ class AbstractChessPiece(models.Model):
         unique_together = (("color", "type", "no"),)
 
     def __str__(self):
-        return '%s %s(%d)' % (self.color, self.type, self.id)
+        return '%s %s%d(%d)' % (self.color, self.type, self.no, self.id)
 
 
 class AbstractField(models.Model):
@@ -82,6 +86,7 @@ class FieldWithChessPiece(models.Model):
     id = models.AutoField(primary_key=True)
     field = models.ForeignKey('AbstractField', on_delete=models.CASCADE, null=True, blank=False)
     chessPiece = models.ForeignKey('AbstractChessPiece', on_delete=models.SET_NULL, null=True, blank=True)
+    chessBoard = models.ForeignKey('ChessBoard', on_delete=models.CASCADE, null=False, blank=False)
 
     def __str__(self):
         return 'Field (%d, %d)' % (self.field.x, self.field.y)
@@ -89,7 +94,6 @@ class FieldWithChessPiece(models.Model):
 
 class ChessBoard(models.Model):
     id = models.AutoField(primary_key=True)
-    fields = models.ManyToManyField('FieldWithChessPiece', blank=False, related_name='parent_board')
 
     def __str__(self):
         return 'Board %d' % self.id
@@ -100,6 +104,19 @@ class Game(models.Model):
     Model representing one instance of the game.
     """
     turn = (('w', 'White Player'), ('b', 'Black Player'))
-    chessBoard = models.OneToOneField('ChessBoard', on_delete=models.SET_NULL, null=True, blank=True, unique=True)
+    chessBoard = models.OneToOneField('ChessBoard', on_delete=models.SET_NULL, null=True, blank=False, unique=True)
     points = ArrayField(models.IntegerField(null=False, blank=False, default=0), size=2) # first - white, second - black
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        chessboard = ChessBoard.objects.create()
+        self.create_fields_with_pieces(chessboard)
+        self.chessBoard = chessboard
+
+    @staticmethod
+    def create_fields_with_pieces(chessboard):
+        # TODO create fields with pieces
+        abstract_fields_list = AbstractField.objects.all()
+        abstract_chess_pieces_list = AbstractChessPiece.objects.all()
+        #game = FieldWithChessPiece.objects.create(chessBoard=chessboard...)
+        

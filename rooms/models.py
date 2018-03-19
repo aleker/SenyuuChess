@@ -2,6 +2,8 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from games.models import Game
+
 
 class Room(models.Model):
     """
@@ -23,6 +25,12 @@ class Room(models.Model):
             return 'Room without id'
         else:
             return 'Room #%s' % self.id
+
+    def __init__(self, password, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.password = password
+        game = Game.objects.create()
+        self.game = game
 
     def clean(self):
         if self.password is None:
