@@ -5,12 +5,12 @@ from django.db import models
 
 class Room(models.Model):
     """
-    Model representing room for one instance of the game (one room for two players).
+    Model representing rooms for one instance of the game (one rooms for two players).
     """
     id = models.AutoField(primary_key=True)
     password = models.CharField(max_length=30, null=False, blank=True)
     game = models.OneToOneField('games.Game', on_delete=models.SET_NULL, null=True, blank=True)
-    playersSessionKeys = ArrayField(models.IntegerField(null=True, blank=True), size=2)
+    # playersSessionKeys = ArrayField(models.IntegerField(null=True, blank=True, default=0), size=2)
 
     class Meta:
         ordering = ["id"]
@@ -22,7 +22,7 @@ class Room(models.Model):
         if self.id is None:
             return 'Room without id'
         else:
-            return '%s' % self.id
+            return 'Room #%s' % self.id
 
     def clean(self):
         if self.password is None:

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+<!--Load bootstrap-->
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block title %}Rooms{% endblock %}
+
+{% block nav %}{% include "navbar.html"  with active='rooms_active'%}{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <h1>Create Room</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">Create Room</div>
+        <div class="panel-body">
+            <form action="" method="post" style="display: inline">
+                {% csrf_token %}
+                {% bootstrap_form form layout='horizontal' %}
+                {% bootstrap_button "Create room" button_class="btn-default" button_type="submit"%}
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

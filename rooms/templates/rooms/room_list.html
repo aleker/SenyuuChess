@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+<!--Load bootstrap-->
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block title %}Rooms{% endblock %}
+
+{% block nav %}{% include "navbar.html"  with active='rooms_active'%}{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <h1>Rooms List</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">Rooms
+            <span class="pull-right">
+                <a href="{% url 'room_create_url'%}"> Create Room </a>
+            </span>
+        </div>
+        <div class="panel-body">
+            {% if room_list %}
+                <ul class="list-group">
+                    {% for room in room_list %}
+                        <li class="list-group-item"><a href="{{ room.get_absolute_url }}">{{ room }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>There are no rooms.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

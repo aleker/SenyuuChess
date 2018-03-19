@@ -1,3 +1,7 @@
-django
+Django
 django-bootstrap3
+pip
+psycopg2
 psycopg2-binary
+pytz
+setuptools
