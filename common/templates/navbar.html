@@ -10,15 +10,6 @@
             <li class="{% if active == 'rooms_active' %} active {% endif %}" id="rooms"><a href="{% url 'rooms_url' %}">Rooms</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            {% if request.session.session_key %}
-                <div class="navbar-header">
-                    <span class="navbar-brand" ><strong>{{ request.session.session_key }}</strong></span>
-                </div>
-            {% else %}
-                <div class="navbar-header">
-                    <span class="navbar-brand" ><strong>Nie ma id</strong></span>
-                </div>
-            {%  endif %}
             <li><a href="/admin">Admin</a></li>
         </ul>
     </div>

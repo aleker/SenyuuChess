@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -12,7 +11,6 @@ class Room(models.Model):
     id = models.AutoField(primary_key=True)
     password = models.CharField(max_length=30, null=False, blank=True)
     game = models.OneToOneField('games.Game', on_delete=models.SET_NULL, null=True, blank=True)
-    # playersSessionKeys = ArrayField(models.IntegerField(null=True, blank=True, default=0), size=2)
 
     class Meta:
         ordering = ["id"]
@@ -26,12 +24,9 @@ class Room(models.Model):
         else:
             return 'Room #%s' % self.id
 
-    def __init__(self, password, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.password = password
-        game = Game.objects.create()
-        self.game = game
-
     def clean(self):
+        if self.game is None:
+            game = Game.objects.create()
+            self.game = game
         if self.password is None:
             raise ValidationError('You have to set password!')

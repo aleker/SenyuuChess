@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+<!--Load bootstrap-->
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block title %}Room{% endblock %}
+
+{% block nav %}{% include "navbar.html"  with active='rooms_active'%}{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ object }} (<span class="text-muted"><strong>Password: </strong>{{ object.password }})</span></h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">Game</div>
+        <div class="panel-body">
+            <span>{{ object.game }}</span>
+        </div>
+    </div>
+
+{% endblock %}
