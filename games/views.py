@@ -1,3 +1,14 @@
-from django.shortcuts import render
+from django.http import Http404
+from django.shortcuts import redirect
 
-# Create your views here.
+from games.models import Game
+
+
+def game(request, *args, **kwargs):
+    pk_game = kwargs['pk_game']
+    try:
+        game = Game.objects.get(pk=pk_game)
+    except Game.DoesNotExist:
+        raise Http404("Game does not exist")
+    return redirect('game_url', pk_game=pk_game)
+
