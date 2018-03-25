@@ -22,8 +22,11 @@ class RoomCreate(CreateView):
     fields = ['id', 'password']
 
     def get_success_url(self):
-        messages.add_message(self.request, messages.SUCCESS, "Room added.")
-        return reverse('rooms_url')
+        context = {
+            'pk_room': self.object.pk,
+            'pk_game': self.object.game.pk
+        }
+        return reverse('game_url', kwargs=context)
 
 
 class RoomDetailView(DetailView):
