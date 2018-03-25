@@ -14,12 +14,17 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{{ object }} (<span class="text-muted"><strong>Password: </strong>{{ object.password }})</span></h1>
+    <h1><a href="{% url 'room_detail_url' pk_room=object.pk %}">{{ object }}</a>
+        <span class="text-muted">(<strong>Password: </strong>{{ object.password }})</span>
+    </h1>
     <div class="panel panel-default">
-        <div class="panel-heading">Game</div>
-        <div class="panel-body">
-            {% block game_block %}{% endblock %}
+        {% block game_block %}
+        <div class="panel-heading">
+            <a href="{% url 'rooms_url'%}{{ object.pk }}/games/{{ object.game.pk }}">{{ object.game }}</a>
         </div>
+        <div class="panel-body">
+        </div>
+        {% endblock %}
     </div>
 
 {% endblock %}

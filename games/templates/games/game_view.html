@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "rooms/room_detail_view_form.html" %}
 {% load static %}
 
 <!--Load bootstrap-->
@@ -7,6 +7,8 @@
 {% bootstrap_javascript %}
 
 {% block game_block %}
-    <h1>Game_view</h1>
-
+        <div class="panel-heading">{{ object.game }}</div>
+        <div class="panel-body">
+            <h1>Here gameplay will be displayed</h1>
+        </div>
 {% endblock %}

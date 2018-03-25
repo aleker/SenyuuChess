@@ -1,10 +1,10 @@
 from django.conf.urls import url
-from django.views.generic import RedirectView
 
+from games.views import GameRedirectView
 from . import views
 
 urlpatterns = [
     url(r'(?P<pk_game>\d+)$', views.game, name='game_url'),
-    url(r'^.*$', RedirectView.as_view(url='home_url', permanent=False), name='index'),
+    url(r'^.*$', GameRedirectView.as_view(), name='redirect_to_room_url'),
 
 ]

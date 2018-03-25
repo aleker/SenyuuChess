@@ -104,6 +104,9 @@ class Game(models.Model):
     white_points = models.IntegerField(blank=False, null=False, default=0)
     black_points = models.IntegerField(blank=False, null=False, default=0)
 
+    def __str__(self):
+        return 'Game #%s' % self.pk
+
     def clean(self):
         if self.chessBoard is None:
             chessboard = ChessBoard.objects.create()

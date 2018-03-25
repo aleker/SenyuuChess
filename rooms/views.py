@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import *
 from django.contrib import messages
@@ -29,6 +30,7 @@ class RoomDetailView(DetailView):
     model = Room
     template_name_suffix = '_detail_view_form'
     fields = ['id', 'password']
+    pk_url_kwarg = "pk_room"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
