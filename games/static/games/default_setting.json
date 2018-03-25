@@ -1,0 +1,198 @@
+{
+  "white": [
+    {
+      "piece": 1,
+      "row": 0,
+      "col": 0,
+      "status": 0
+    },
+    {
+      "piece": 2,
+      "row": 0,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 3,
+      "row": 0,
+      "col": 2,
+      "status": 0
+    },
+    {
+      "piece": 5,
+      "row": 0,
+      "col": 3,
+      "status": 0
+    },
+    {
+      "piece": 4,
+      "row": 0,
+      "col": 4,
+      "status": 0
+    },
+    {
+      "piece": 3,
+      "row": 0,
+      "col": 5,
+      "status": 0
+    },
+    {
+      "piece": 2,
+      "row": 0,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 1,
+      "row": 0,
+      "col": 7,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 1,
+      "col": 0,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 1,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 1,
+      "col": 2,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 1,
+      "col": 3,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 1,
+      "col": 4,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 1,
+      "col": 5,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 1,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 1,
+      "col": 7,
+      "status": 0
+    }
+  ],
+  "black": [
+    {
+      "piece": 1,
+      "row": 7,
+      "col": 0,
+      "status": 0
+    },
+    {
+      "piece": 2,
+      "row": 7,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 3,
+      "row": 7,
+      "col": 2,
+      "status": 0
+    },
+    {
+      "piece": 5,
+      "row": 7,
+      "col": 3,
+      "status": 0
+    },
+    {
+      "piece": 4,
+      "row": 7,
+      "col": 4,
+      "status": 0
+    },
+    {
+      "piece": 3,
+      "row": 7,
+      "col": 5,
+      "status": 0
+    },
+    {
+      "piece": 2,
+      "row": 7,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 1,
+      "row": 7,
+      "col": 7,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 0,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 2,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 3,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 4,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 5,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 7,
+      "status": 0
+    }
+  ]
+}

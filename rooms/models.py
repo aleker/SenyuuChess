@@ -27,6 +27,7 @@ class Room(models.Model):
     def clean(self):
         if self.game is None:
             game = Game.objects.create()
+            game.clean()
             self.game = game
         if self.password is None:
             raise ValidationError('You have to set password!')

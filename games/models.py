@@ -1,4 +1,6 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
+import json
+
+import os
 from django.db import models
 
 # https://docs.djangoproject.com/en/2.0/ref/models/fields/
@@ -30,92 +32,29 @@ from django.db import models
 # ForeignKey.on_delete - decide what happens when an object referenced by a ForeignKey is deleted
 
 
-class AbstractChessPiece(models.Model):
-    COLOR = (
-        ('w', 'white'),
-        ('b', 'black'),
-    )
-
-    TYPE = (
-        ('K', 'king'),
-        ('Q', 'queen'),
-        ('r', 'rook'),      # x2, wieża
-        ('k', 'knight'),    # x2
-        ('b', 'bishop'),    # x2, hetman
-        ('p', 'pawn'),      # x8
-    )
-    color = models.CharField(max_length=1, choices=COLOR, null=False, blank=False, default='w')
-    type = models.CharField(max_length=1, choices=TYPE, null=False, blank=False, default='p')
-    no = models.IntegerField(validators=[
-            MaxValueValidator(8),
-            MinValueValidator(1)
-        ], blank=False, null=False, default=1)
-
-    class Meta:
-        ordering = ["color", "type", "no"]
-        unique_together = (("color", "type", "no"),)
-
-    def __str__(self):
-        return '%s %s%d(%d)' % (self.color, self.type, self.no, self.id)
-
-
-class AbstractField(models.Model):
-    x = models.IntegerField(validators=[
-            MaxValueValidator(7),
-            MinValueValidator(0)
-        ])
-    y = models.IntegerField(validators=[
-            MaxValueValidator(7),
-            MinValueValidator(0)
-        ])
-
-    class Meta:
-        ordering = ["x", "y"]
-        unique_together = (("x", "y"),)
-
-    def __str__(self):
-        return 'Field (%d, %d)' % (self.x, self.y)
-
-
-class FieldWithChessPiece(models.Model):
-    id = models.AutoField(primary_key=True)
-    field = models.ForeignKey('AbstractField', on_delete=models.CASCADE, null=True, blank=True)
-    chessPiece = models.ForeignKey('AbstractChessPiece', on_delete=models.SET_NULL, null=True, blank=True)
-    chessBoard = models.ForeignKey('ChessBoard', on_delete=models.CASCADE, null=True, blank=True)
-
-    def __str__(self):
-        return 'Field (%d, %d)' % (self.field.x, self.field.y)
-
-
-class ChessBoard(models.Model):
-    id = models.AutoField(primary_key=True)
-
-    def __str__(self):
-        return 'Board %d' % self.id
-
-
 class Game(models.Model):
     """
     Model representing one instance of the game.
     """
     PLAYERS_COLORS = (('w', 'White Player'), ('b', 'Black Player'))
     turn = models.CharField(max_length=15, choices=PLAYERS_COLORS, default="w")
-    chessBoard = models.OneToOneField('ChessBoard', on_delete=models.SET_NULL, null=True, blank=True, unique=True)
     white_points = models.IntegerField(blank=False, null=False, default=0)
     black_points = models.IntegerField(blank=False, null=False, default=0)
+    piecesPositions = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self):
         return 'Game #%s' % self.pk
 
     def clean(self):
-        if self.chessBoard is None:
-            chessboard = ChessBoard.objects.create()
-            self.create_fields_with_pieces(chessboard)
-            self.chessBoard = chessboard
+        if self.piecesPositions is None:
+            module_dir = os.path.dirname(__file__)              # get current directory
+            json_file_path = os.path.join(module_dir, 'static/games/default_setting.json')
+            json_data = open(json_file_path)
+            json_struct = json.load(json_data)                  # deserialises it (JSON)
+            json_string = json.dumps(json_struct)               # json formatted STRING
+            json_data.close()
+            self.piecesPositions = json_string
+            self.save()
 
-    @staticmethod
-    def create_fields_with_pieces(chessboard):
-        # TODO create fields with pieces
-        abstract_fields_list = AbstractField.objects.all()
-        abstract_chess_pieces_list = AbstractChessPiece.objects.all()
-        # fieldWithChessPiece = FieldWithChessPiece.objects.create(chessBoard=chessboard)
+# you need parse json to string and save with CharField using json.dumps(data).
+# To recovery data, use json string to dict with json.loads(json_string)
