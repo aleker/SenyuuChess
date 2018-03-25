@@ -125,8 +125,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+STATIC_ROOT = ''
+
 STATIC_URL = '/static/'
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-# SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
-SESSION_COOKIE_HTTPONLY = True
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "common/static"),
+    os.path.join('static'),
+)
+

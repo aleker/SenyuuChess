@@ -6,9 +6,18 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
+{% block head %}
+    <script src="{% static 'games/js/chessboard.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'games/css/chessboard.css' %}"/>
+{% endblock %}
+
 {% block game_block %}
         <div class="panel-heading">{{ object.game }}</div>
         <div class="panel-body">
-            <h1>Here gameplay will be displayed</h1>
+            <dev id="chess-container">
+                <canvas id="chess-canvas" width="560" height="560" >
+                Your browser does not support the HTML5 canvas tag.
+                </canvas>
+            </dev>
         </div>
 {% endblock %}

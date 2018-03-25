@@ -1,0 +1,15 @@
+$maxCanvasWidth: 700px;
+
+#chess-container {
+  width: 100%;
+  display: block;
+  border: 5px ridge red;
+
+  #chess-canvas {
+    width: 100%;
+    max-width: $maxCanvasWidth;
+    padding: 0;
+    border:2px solid #d3d3d3;
+  }
+}
+
