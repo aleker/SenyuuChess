@@ -6,18 +6,19 @@ BLOCK_COLOUR_WHITE = 'white';
 BLOCK_COLOUR_BLACK = 'black';
 
 PIECE_PAWN = 0;
-PIECE_CASTLE = 1;
-PIECE_ROUKE = 2;
-PIECE_BISHOP = 3;
-PIECE_QUEEN = 4;
-PIECE_KING = 5;
+PIECE_CASTLE_1 = 1;
+PIECE_CASTLE_2 = 2;
+PIECE_ROUKE = 3;
+PIECE_BISHOP_1 = 4;
+PIECE_BISHOP_2 = 5;
+PIECE_QUEEN = 6;
+PIECE_KING = 7;
 
 IN_PLAY = 0;
 RIP = 1;
 
 var chessCanvas = null;
 var ctx = null;
-var defaultChessPositions = null;
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -35,13 +36,21 @@ document.addEventListener('DOMContentLoaded', function () {
 function draw() {
     drawBoard();
 
-    defaultChessPositions = defaultPositions();
+    var chessPositions = getPiecePositions();
+    // Draw white pieces
+    var white_pieces = new Image();
+    white_pieces.src = '../../img/SenyuuChess_white';
+    // white_pieces.onload = function() {
+    //     drawTeamOfPieces(chessPositions.white, false);
+    // };
 
-    // Draw pieces
-    // var pieces = new Image();
-    // pieces.src = 'sciagi/circle.png';
-    // pieces.onload = drawPieces;
-    //
+    // Draw black pieces
+    var black_pieces = new Image();
+    black_pieces.src = '../../img/SenyuuChess_black';
+    // black_pieces.onload = function() {
+    //     drawTeamOfPieces(chessPositions.black, true);
+    // };
+
     // chessCanvas.addEventListener('click', board_click, false);
 }
 
@@ -77,206 +86,34 @@ function getBlockColour(rowNo, fieldNo) {
     return color;
 }
 
-function defaultPositions() {
-    var json = {
-        "white": [
-            {
-                "piece": PIECE_CASTLE,
-                "row": 0,
-                "col": 0,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_ROUKE,
-                "row": 0,
-                "col": 1,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_BISHOP,
-                "row": 0,
-                "col": 2,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_KING,
-                "row": 0,
-                "col": 3,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_QUEEN,
-                "row": 0,
-                "col": 4,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_BISHOP,
-                "row": 0,
-                "col": 5,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_ROUKE,
-                "row": 0,
-                "col": 6,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_CASTLE,
-                "row": 0,
-                "col": 7,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 1,
-                "col": 0,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 1,
-                "col": 1,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 1,
-                "col": 2,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 1,
-                "col": 3,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 1,
-                "col": 4,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 1,
-                "col": 5,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 1,
-                "col": 6,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 1,
-                "col": 7,
-                "status": IN_PLAY
-            }
-        ],
-        "black": [
-            {
-                "piece": PIECE_CASTLE,
-                "row": 7,
-                "col": 0,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_ROUKE,
-                "row": 7,
-                "col": 1,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_BISHOP,
-                "row": 7,
-                "col": 2,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_KING,
-                "row": 7,
-                "col": 3,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_QUEEN,
-                "row": 7,
-                "col": 4,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_BISHOP,
-                "row": 7,
-                "col": 5,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_ROUKE,
-                "row": 7,
-                "col": 6,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_CASTLE,
-                "row": 7,
-                "col": 7,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 6,
-                "col": 0,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 6,
-                "col": 1,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 6,
-                "col": 2,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 6,
-                "col": 3,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 6,
-                "col": 4,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 6,
-                "col": 5,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 6,
-                "col": 6,
-                "status": IN_PLAY
-            },
-            {
-                "piece": PIECE_PAWN,
-                "row": 6,
-                "col": 7,
-                "status": IN_PLAY
-            }
-        ]
+function getPiecePositions() {
+    // TODO
+    return 1
+}
+
+function drawTeamOfPieces(team, isBlackTeam) {
+    var pieceNo;
+    for (pieceNo = 0; pieceNo < team.length; pieceNo++) {
+        drawPiece(team[pieceNo], isBlackTeam);
+    }
+}
+
+function drawPiece(curPiece, isBlackTeam) {
+    var imageCoords = getImageCoords(curPiece.piece, isBlackTeam);
+
+    // Draw the piece onto the canvas
+    ctx.drawImage(pieces,
+        imageCoords.x, imageCoords.y, BLOCK_SIZE, BLOCK_SIZE,
+        curPiece.col * BLOCK_SIZE, curPiece.row * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+    // TODO if black draw in reverse order
+
+}
+
+function getImageCoords(pieceCode, isBlackTeam) {
+    return {
+        "x": pieceCode * BLOCK_SIZE,
+        "y": (isBlackTeam ? 0 : BLOCK_SIZE)
     };
-    return json;
 }
 
 /*
