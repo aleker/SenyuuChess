@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap3',
+    'channels',
     'home',
     'rooms',
     'games',
@@ -133,4 +134,15 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "common/static"),
     os.path.join('static'),
 )
+
+# webSockets
+ASGI_APPLICATION = "SenyuuChess.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
 

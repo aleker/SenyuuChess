@@ -1,3 +1,5 @@
+channels
+channels_redis
 Django
 django-bootstrap3
 pip

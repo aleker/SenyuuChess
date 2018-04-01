@@ -30,5 +30,3 @@ class GameRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         room = get_object_or_404(Room, pk=kwargs['pk_room'])
         return super().get_redirect_url(*args, **kwargs)
-
-
