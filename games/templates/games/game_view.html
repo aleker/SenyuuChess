@@ -1,11 +1,6 @@
 {% extends "rooms/room_detail_view_form.html" %}
 {% load static %}
 
-<!--Load bootstrap-->
-{% load bootstrap3 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
 {% block head %}
     <script src="{% static 'games/js/chessboard.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'games/css/chessboard.css' %}"/>
@@ -23,24 +18,32 @@
 
     <script>
         var pk_game = {{ game.pk }};
-        var pk_room = {{ object.pk }};
         var gameSocket = new WebSocket(
             'ws://' + window.location.host +
-            '/rooms/' + pk_room +
-            '/games/' + pk_game);
+            '/ws/games/' + pk_game);
 
         gameSocket.onmessage = function(e) {
-            {#var data = JSON.parse(e.data);#}
-            {#var message = data['message'];#}
-            {#document.querySelector('#chat-log').value += (message + '\n');#}
+            var data = JSON.parse(e.data);
+            var type = data['type'];
+            switch(type) {
+                case 'hello_message_server':
+                    console.log("Received message: " + data['message']);
+                    break;
+                default:
+                    console.log("Strange message from server!");
+            }
         };
 
         gameSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
 
-        {#gameSocket.send(JSON.stringify({#}
-        {#        'message': message#}
-        {#    }));#}
+        document.querySelector('#chess-canvas').onclick = function(e) {
+            gameSocket.send(JSON.stringify({
+                'type': "hello_message",
+                'message': "Hello from client!"
+            }));
+            console.log("Message sent.");
+        };
     </script>
 {% endblock %}
