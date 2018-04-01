@@ -1,6 +1,7 @@
 NUMBER_OF_ROWS = 8;
 NUMBER_OF_COLS = 8;
 BLOCK_SIZE = null;
+IMG_BLOCK_SIZE = null;
 
 BLOCK_COLOUR_WHITE = 'white';
 BLOCK_COLOUR_BLACK = 'black';
@@ -20,7 +21,6 @@ RIP = 1;
 var chessCanvas = null;
 var ctx = null;
 
-
 document.addEventListener('DOMContentLoaded', function () {
     chessCanvas = document.getElementById("chess-canvas");
     ctx = chessCanvas.getContext("2d");
@@ -29,26 +29,32 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
     BLOCK_SIZE = chessCanvas.height / NUMBER_OF_ROWS;
-    draw();
+    drawBoard();
+    // draw();
 
 }, false);
+var white_pieces = null;
+function draw(piecePositionsJson) {
+    // drawBoard();
+    // var chessPositions = getPiecePositions();
 
-function draw() {
-    drawBoard();
-
-    var chessPositions = getPiecePositions();
     // Draw white pieces
-    var white_pieces = new Image();
-    white_pieces.src = '../../img/SenyuuChess_white';
-    // white_pieces.onload = function() {
-    //     drawTeamOfPieces(chessPositions.white, false);
-    // };
+    white_pieces = new Image();
+    // var path = '../../../static/games/img/SenyuuChess_white.png';
+    var path = DJANGO_IMAGE_URL + 'SenyuuChess_white.png';
+    white_pieces.src = path;
+    // white_pieces.width = chessCanvas.width;
+    white_pieces.onload = function() {
+        // IMG_BLOCK_SIZE = white_pieces.width / NUMBER_OF_COLS;
+        drawTeamOfPieces(piecePositionsJson.white, false);
+    };
 
     // Draw black pieces
-    var black_pieces = new Image();
-    black_pieces.src = '../../img/SenyuuChess_black';
+    // var black_pieces = new Image();
+    // var path = DJANGO_STATIC_URL + '/img/SenyuuChess_black.png';
+    // black_pieces.src = path;
     // black_pieces.onload = function() {
-    //     drawTeamOfPieces(chessPositions.black, true);
+    //     drawTeamOfPieces(piecePositionsJson.black, true);
     // };
 
     // chessCanvas.addEventListener('click', board_click, false);
@@ -86,11 +92,6 @@ function getBlockColour(rowNo, fieldNo) {
     return color;
 }
 
-function getPiecePositions() {
-    // TODO
-    return 1
-}
-
 function drawTeamOfPieces(team, isBlackTeam) {
     var pieceNo;
     for (pieceNo = 0; pieceNo < team.length; pieceNo++) {
@@ -102,7 +103,10 @@ function drawPiece(curPiece, isBlackTeam) {
     var imageCoords = getImageCoords(curPiece.piece, isBlackTeam);
 
     // Draw the piece onto the canvas
-    ctx.drawImage(pieces,
+    // ctx.drawImage(white_pieces,
+    //     imageCoords.x, imageCoords.y, BLOCK_SIZE, BLOCK_SIZE,
+    //     curPiece.col * BLOCK_SIZE, curPiece.row * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+    ctx.drawImage(white_pieces,
         imageCoords.x, imageCoords.y, BLOCK_SIZE, BLOCK_SIZE,
         curPiece.col * BLOCK_SIZE, curPiece.row * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
     // TODO if black draw in reverse order

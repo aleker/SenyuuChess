@@ -17,6 +17,7 @@
     </div>
 
     <script>
+        // WEB SOCKETS
         var pk_game = {{ game.pk }};
         var gameSocket = new WebSocket(
             'ws://' + window.location.host +
@@ -28,6 +29,7 @@
             switch(type) {
                 case 'hello_message_server':
                     console.log("Received message: " + data['message']);
+                    draw({{ game.piecesPositions|safe }});
                     break;
                 default:
                     console.log("Strange message from server!");
@@ -45,5 +47,9 @@
             }));
             console.log("Message sent.");
         };
+
+        // IMAGES
+        DJANGO_IMAGE_URL = '{% static 'games/img/'%}';
+
     </script>
 {% endblock %}
