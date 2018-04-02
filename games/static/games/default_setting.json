@@ -3,85 +3,55 @@
     {
       "piece": 1,
       "row": 0,
-      "col": 0,
+      "col": 7,
       "status": 0
     },
     {
       "piece": 3,
-      "row": 0,
-      "col": 1,
+      "row": 1,
+      "col": 7,
       "status": 0
     },
     {
       "piece": 4,
-      "row": 0,
-      "col": 2,
+      "row": 2,
+      "col": 7,
       "status": 0
     },
     {
       "piece": 7,
-      "row": 0,
-      "col": 3,
+      "row": 3,
+      "col": 7,
       "status": 0
     },
     {
       "piece": 6,
-      "row": 0,
-      "col": 4,
+      "row": 4,
+      "col": 7,
       "status": 0
     },
     {
       "piece": 5,
-      "row": 0,
-      "col": 5,
+      "row": 5,
+      "col": 7,
       "status": 0
     },
     {
       "piece": 3,
-      "row": 0,
-      "col": 6,
+      "row": 6,
+      "col": 7,
       "status": 0
     },
     {
       "piece": 2,
-      "row": 0,
+      "row": 7,
       "col": 7,
       "status": 0
     },
     {
       "piece": 0,
-      "row": 1,
-      "col": 0,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 1,
-      "col": 1,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 1,
-      "col": 2,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 1,
-      "col": 3,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 1,
-      "col": 4,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 1,
-      "col": 5,
+      "row": 0,
+      "col": 6,
       "status": 0
     },
     {
@@ -92,106 +62,136 @@
     },
     {
       "piece": 0,
-      "row": 1,
-      "col": 7,
+      "row": 2,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 3,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 4,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 5,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 6,
+      "col": 6,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 7,
+      "col": 6,
       "status": 0
     }
   ],
   "black": [
     {
-      "piece": 1,
-      "row": 7,
+      "piece": 6,
+      "row": 0,
+      "col": 0,
+      "status": 0
+    },
+    {
+      "piece": 4,
+      "row": 1,
       "col": 0,
       "status": 0
     },
     {
       "piece": 3,
-      "row": 7,
-      "col": 1,
+      "row": 2,
+      "col": 0,
+      "status": 0
+    },
+    {
+      "piece": 0,
+      "row": 3,
+      "col": 0,
+      "status": 0
+    },
+    {
+      "piece": 1,
+      "row": 4,
+      "col": 0,
+      "status": 0
+    },
+    {
+      "piece": 2,
+      "row": 5,
+      "col": 0,
       "status": 0
     },
     {
       "piece": 4,
-      "row": 7,
-      "col": 2,
-      "status": 0
-    },
-    {
-      "piece": 7,
-      "row": 7,
-      "col": 3,
-      "status": 0
-    },
-    {
-      "piece": 6,
-      "row": 7,
-      "col": 4,
+      "row": 6,
+      "col": 0,
       "status": 0
     },
     {
       "piece": 5,
       "row": 7,
-      "col": 5,
-      "status": 0
-    },
-    {
-      "piece": 3,
-      "row": 7,
-      "col": 6,
-      "status": 0
-    },
-    {
-      "piece": 2,
-      "row": 7,
-      "col": 7,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 6,
       "col": 0,
       "status": 0
     },
     {
-      "piece": 0,
+      "piece": 7,
+      "row": 0,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 7,
+      "row": 1,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 7,
+      "row": 2,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 7,
+      "row": 3,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 7,
+      "row": 4,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 7,
+      "row": 5,
+      "col": 1,
+      "status": 0
+    },
+    {
+      "piece": 7,
       "row": 6,
       "col": 1,
       "status": 0
     },
     {
-      "piece": 0,
-      "row": 6,
-      "col": 2,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 6,
-      "col": 3,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 6,
-      "col": 4,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 6,
-      "col": 5,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 6,
-      "col": 6,
-      "status": 0
-    },
-    {
-      "piece": 0,
-      "row": 6,
-      "col": 7,
+      "piece": 7,
+      "row": 7,
+      "col": 1,
       "status": 0
     }
   ]
