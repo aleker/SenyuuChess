@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block head %}
-    <script src="{% static 'games/js/chessboard.js' %}"></script>
+    <script src="{% static 'games/js/chessboard.js' %}" id="chess-script"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'games/css/chessboard.css' %}"/>
 {% endblock %}
 
@@ -23,13 +23,28 @@
             'ws://' + window.location.host +
             '/ws/games/' + pk_game);
 
+        DJANGO_IMAGE_URL = '{% static 'games/img/'%}';
+
+        gameSocket.onopen = function(e) {
+            gameSocket.send(JSON.stringify({
+                'type': "hello_message",
+                'message': "Hello from client!"
+            }));
+            console.log("Message sent.");
+        };
+
         gameSocket.onmessage = function(e) {
             var data = JSON.parse(e.data);
             var type = data['type'];
             switch(type) {
                 case 'hello_message_server':
                     console.log("Received message: " + data['message']);
-                    draw({{ game.piecesPositions|safe }});
+                    var chessScript = document.getElementById('chess-script');
+                    updateCurrentPiecesPositions({{ game.piecesPositions|safe }});
+                    drawPieces();
+                    break;
+                case 'positions_update':
+                    var positions = data['message'];
                     break;
                 default:
                     console.log("Strange message from server!");
@@ -39,17 +54,6 @@
         gameSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
-
-        document.querySelector('#chess-canvas').onclick = function(e) {
-            gameSocket.send(JSON.stringify({
-                'type': "hello_message",
-                'message': "Hello from client!"
-            }));
-            console.log("Message sent.");
-        };
-
-        // IMAGES
-        DJANGO_IMAGE_URL = '{% static 'games/img/'%}';
 
     </script>
 {% endblock %}

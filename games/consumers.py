@@ -35,15 +35,19 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_type = text_data_json['type']
+
+        #     # Send message to room group
+        #     await self.channel_layer.group_send(
+        #         self.game_group_name, {
+        #             'type': 'hello_message_broadcast',
+        #             'message': text_data_json['message']
+        #         }
+        #     )
         if message_type == 'hello_message':
-            print("Message type: ", message_type)
-            # Send message to room group
-            await self.channel_layer.group_send(
-                self.game_group_name, {
-                    'type': 'hello_message_broadcast',
-                    'message': text_data_json['message']
-                }
-            )
+            await self.send(text_data=json.dumps({
+                'type': 'hello_message_server',
+                'message': "Hello message from server."
+            }))
         else:
             print("Strange message type!")
 

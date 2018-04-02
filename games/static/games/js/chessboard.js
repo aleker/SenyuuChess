@@ -1,11 +1,21 @@
+// STYLE
+// board:
 NUMBER_OF_ROWS = 8;
 NUMBER_OF_COLS = 8;
 BLOCK_SIZE = null;
 IMG_BLOCK_SIZE = null;
+COLOUR_WHITE = 'white';
+COLOUR_BLACK = 'black';
 
-BLOCK_COLOUR_WHITE = 'white';
-BLOCK_COLOUR_BLACK = 'black';
+// pieces:
+whiteImgName = 'SenyuuChess_white.png';
+blackImgName = 'SenyuuChess_black.png';
 
+// piece selection:
+SELECT_LINE_WIDTH = '3px';
+HIGHLIGHT_COLOUR = 'blue';
+
+// PIECES
 PIECE_PAWN = 0;
 PIECE_CASTLE_1 = 1;
 PIECE_CASTLE_2 = 2;
@@ -22,6 +32,7 @@ var chessCanvas = null;
 var ctx = null;
 var white_pieces = null;
 var black_pieces = null;
+var currentPiecePositions = null;
 
 document.addEventListener('DOMContentLoaded', function () {
     chessCanvas = document.getElementById("chess-canvas");
@@ -33,32 +44,16 @@ document.addEventListener('DOMContentLoaded', function () {
     BLOCK_SIZE = chessCanvas.height / NUMBER_OF_ROWS;
     drawBoard();
     prepareImages();
-    // draw();
-    // chessCanvas.addEventListener('click', board_click, false);
+    chessCanvas.addEventListener('click', board_click, false);
 
 }, false);
 
-function prepareImages() {
-    // Prepare white pieces
-    white_pieces = new Image();
-    white_pieces.src = DJANGO_IMAGE_URL + 'SenyuuChess_white.png';
-    // white_pieces.width = chessCanvas.width;
-    white_pieces.onload = function() {
-        IMG_BLOCK_SIZE = white_pieces.width / NUMBER_OF_COLS;
-    };
-
-    // Prepare black pieces
-    black_pieces = new Image();
-    black_pieces.src = DJANGO_IMAGE_URL + 'SenyuuChess_black.png';
-}
-
-function draw(piecePositionsJson) {
-    // ctx.clearRect(0, 0, chessCanvas.width, chessCanvas.height);
-    drawTeamOfPieces(piecePositionsJson.white, false, true);
-    drawTeamOfPieces(piecePositionsJson.black, true, true);
-}
+/****************
+* BOARD
+*****************/
 
 function drawBoard() {
+    ctx.clearRect(0, 0, chessCanvas.width, chessCanvas.height);
     // Draw Rows
     for(var rowNo = 0; rowNo < NUMBER_OF_ROWS; rowNo++) {
         drawRow(rowNo);
@@ -84,10 +79,37 @@ function drawField(rowNo, fieldNo) {
 function getBlockColour(rowNo, fieldNo) {
     var color;
     if (rowNo % 2)
-        color = (fieldNo % 2 ? BLOCK_COLOUR_BLACK : BLOCK_COLOUR_WHITE);
+        color = (fieldNo % 2 ? COLOUR_BLACK : COLOUR_WHITE);
     else
-        color = (fieldNo % 2 ? BLOCK_COLOUR_WHITE : BLOCK_COLOUR_BLACK);
+        color = (fieldNo % 2 ? COLOUR_WHITE : COLOUR_BLACK);
     return color;
+}
+
+/****************
+* PIECES
+*****************/
+
+function prepareImages() {
+    // Prepare white pieces
+    white_pieces = new Image();
+    white_pieces.src = DJANGO_IMAGE_URL + whiteImgName + '';
+    // white_pieces.width = chessCanvas.width;
+    white_pieces.onload = function() {
+        IMG_BLOCK_SIZE = white_pieces.width / NUMBER_OF_COLS;
+    };
+
+    // Prepare black pieces
+    black_pieces = new Image();
+    black_pieces.src = DJANGO_IMAGE_URL + blackImgName + '';
+}
+
+function drawPieces() {
+    drawTeamOfPieces(currentPiecePositions.white, false, true);
+    drawTeamOfPieces(currentPiecePositions.black, true, true);
+}
+
+function updateCurrentPiecesPositions(newPiecePositionsJson) {
+    currentPiecePositions = newPiecePositionsJson;
 }
 
 function drawTeamOfPieces(team, isBlackTeam, isHappy) {
@@ -132,6 +154,195 @@ function getImageCoords(pieceCode, isHappy) {
         "y": (isHappy ? 0 : IMG_BLOCK_SIZE)
     };
 }
+
+/****************
+* SELECT AND MOVE
+*****************/
+
+var selectedPiece = null;
+var currentTurn = COLOUR_WHITE;
+
+function board_click(ev) {
+    var x, y;
+    // TODO x y, get clickedBlock
+    // x = ev.clientX - chessCanvas.offsetLeft;
+    // y = ev.clientY - chessCanvas.offsetTop;
+    if (ev.pageX || ev.pageY) {
+        x = ev.pageX;
+        y = ev.pageY;
+    }
+    else {
+        x = ev.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+        y = ev.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+    }
+    x -= chessCanvas.offsetLeft;
+    y -= chessCanvas.offsetTop;
+
+    var clickedBlock = canvasToBlockNo(x, y);
+
+    if(selectedPiece == null) {
+        checkIfPieceClicked(clickedBlock);
+    }
+    else {
+        processMove(clickedBlock);
+    }
+}
+
+function canvasToBlockNo(pos_x, pos_y) {
+    var column = parseInt(pos_x / BLOCK_SIZE);
+    var row = parseInt(pos_y / BLOCK_SIZE);
+    return {'col': column, 'row': row}
+}
+
+function checkIfPieceClicked(clickedBlock) {
+    var pieceAtBlock = getPieceAtBlock(clickedBlock, currentTurn);
+
+    if (pieceAtBlock !== null) {
+        selectPiece(pieceAtBlock);
+    }
+}
+
+function getPieceAtBlock(clickedBlock, teamColor) {
+    var pieceAtBlock = null;
+
+    if (teamColor === false) {
+        pieceAtBlock = getPieceAtBlock(clickedBlock, COLOUR_WHITE);
+        if (pieceAtBlock === null)
+            pieceAtBlock = getPieceAtBlock(clickedBlock, COLOUR_BLACK);
+    }
+    else {
+        var team = (currentTurn === COLOUR_BLACK ?
+        currentPiecePositions.black : currentPiecePositions.white);
+
+        for (var iPieceCounter = 0; iPieceCounter < team.length; iPieceCounter++) {
+            var curPiece = team[iPieceCounter];
+            if (curPiece.status === IN_PLAY &&
+                curPiece.col === clickedBlock.col &&
+                curPiece.row === clickedBlock.row) {
+
+                pieceAtBlock = curPiece;
+                pieceAtBlock.color = teamColor;
+                pieceAtBlock.id = iPieceCounter;
+                break;
+            }
+        }
+    }
+    return pieceAtBlock;
+}
+
+function selectPiece(pieceAtBlock) {
+    // Draw outline
+    ctx.lineWidth = SELECT_LINE_WIDTH;
+    ctx.strokeStyle = HIGHLIGHT_COLOUR;
+    ctx.strokeRect((pieceAtBlock.col * BLOCK_SIZE) + SELECT_LINE_WIDTH,
+        (pieceAtBlock.row * BLOCK_SIZE) + SELECT_LINE_WIDTH,
+        BLOCK_SIZE - (SELECT_LINE_WIDTH * 2),
+        BLOCK_SIZE - (SELECT_LINE_WIDTH * 2));
+
+    selectedPiece = pieceAtBlock;
+}
+
+function deselectPiece() {
+    // TODO
+}
+
+
+function processMove(clickedBlock) {
+    var pieceAtBlock = getPieceAtBlock(clickedBlock, false);
+
+    if (pieceAtBlock !== null) {
+        if (isMyAlly(pieceAtBlock.color)) {
+            changeSelectedPiece(pieceAtBlock);
+            return;
+        }
+    }
+    tryToMove(clickedBlock, pieceAtBlock);
+}
+
+function tryToMove(clickedBlock, enemyPiece) {
+    if (canSelectedMoveToBlock(selectedPiece, clickedBlock, enemyPiece) === true) {
+        movePiece(clickedBlock, enemyPiece);
+    }
+}
+
+function isMyAlly(clickedPieceColor) {
+    return (clickedPieceColor === currentTurn)
+}
+
+function changeSelectedPiece(newPieceToSelect) {
+    deselectPiece();
+    selectPiece(newPieceToSelect)
+}
+
+function canSelectedMoveToBlock(selectedPiece, clickedBlock, enemyPiece)
+{
+    var bCanMove = false;
+
+    switch (selectedPiece.piece)
+    {
+        case PIECE_PAWN:
+            // TODO
+        break;
+
+        case PIECE_CASTLE_1 || PIECE_CASTLE_2:
+
+            // TODO
+
+        break;
+
+        case PIECE_ROUKE:
+
+            // TODO
+
+        break;
+
+        case PIECE_BISHOP_1 || PIECE_BISHOP_2:
+
+            // TODO
+
+        break;
+
+        case PIECE_QUEEN:
+
+            // TODO
+
+        break;
+
+        case PIECE_KING:
+
+            // TODO
+
+        break;
+    }
+
+    bCanMove = true;
+    return bCanMove;
+}
+
+function movePiece(clickedBlock, enemyPiece) {
+    // Clear the block in the original position
+    drawField(selectedPiece.col, selectedPiece.row);
+
+    var teamColor = (currentTurn === COLOUR_WHITE ? 'white' : 'black');
+    var oppositeColor = (currentTurn !== COLOUR_WHITE ? 'white' : 'black');
+
+    // REMOVE ENEMY
+    if (enemyPiece !== null) {
+        // Clear beaten piece
+        drawField(enemyPiece.col, enemyPiece.row);
+        currentPiecePositions[oppositeColor][enemyPiece.id].status = RIP;
+    }
+
+    // DRAW PIECE IN NEW POSITION
+    currentPiecePositions[teamColor][selectedPiece.id].col = clickedBlock.col;
+    currentPiecePositions[teamColor][selectedPiece.id].row = clickedBlock.row;
+    drawPiece(selectedPiece, (currentTurn === COLOUR_BLACK));
+
+    // CLEAR TURN AND SELECTED PIECE
+    currentTurn = (currentTurn === COLOUR_WHITE ? COLOUR_BLACK : COLOUR_WHITE);
+    selectedPiece = null;
+}
+
 
 /*
 * based on https://geeksretreat.wordpress.com/2012/06/01/html-5-canvas-chess-board/
