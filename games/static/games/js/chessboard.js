@@ -1,7 +1,6 @@
 // STYLE
 // board:
 NUMBER_OF_ROWS = 8;
-NUMBER_OF_COLS = 8;
 BLOCK_SIZE = null;
 IMG_BLOCK_SIZE = null;
 COLOUR_WHITE = 'white';
@@ -61,11 +60,11 @@ function drawBoard() {
 
     // Draw chessboard border
     ctx.lineWidth = 3;
-    ctx.strokeRect(0, 0, NUMBER_OF_ROWS * BLOCK_SIZE, NUMBER_OF_COLS * BLOCK_SIZE);
+    ctx.strokeRect(0, 0, NUMBER_OF_ROWS * BLOCK_SIZE, NUMBER_OF_ROWS * BLOCK_SIZE);
 }
 
 function drawRow(rowNo) {
-    for(var fieldNo = 0; fieldNo < NUMBER_OF_COLS; fieldNo++) {
+    for(var fieldNo = 0; fieldNo < NUMBER_OF_ROWS; fieldNo++) {
         drawField(rowNo, fieldNo);
     }
 }
@@ -95,7 +94,7 @@ function prepareImages() {
     white_pieces.src = DJANGO_IMAGE_URL + whiteImgName + '';
     // white_pieces.width = chessCanvas.width;
     white_pieces.onload = function() {
-        IMG_BLOCK_SIZE = white_pieces.width / NUMBER_OF_COLS;
+        IMG_BLOCK_SIZE = white_pieces.width / NUMBER_OF_ROWS;
     };
 
     // Prepare black pieces
@@ -164,9 +163,6 @@ var currentTurn = COLOUR_WHITE;
 
 function board_click(ev) {
     var x, y;
-    // TODO x y, get clickedBlock
-    // x = ev.clientX - chessCanvas.offsetLeft;
-    // y = ev.clientY - chessCanvas.offsetTop;
     if (ev.pageX || ev.pageY) {
         x = ev.pageX;
         y = ev.pageY;
@@ -189,8 +185,9 @@ function board_click(ev) {
 }
 
 function canvasToBlockNo(pos_x, pos_y) {
-    var column = parseInt(pos_x / BLOCK_SIZE);
-    var row = parseInt(pos_y / BLOCK_SIZE);
+    var blockSize = (chessCanvas.clientWidth / NUMBER_OF_ROWS);
+    var column = parseInt(pos_x / blockSize);
+    var row = parseInt(pos_y / blockSize);
     return {'col': column, 'row': row}
 }
 
