@@ -20,13 +20,14 @@
     </div>
 
     <script>
+        DJANGO_IMAGE_URL = '{% static 'games/img/'%}';
+        PK_GAME = {{ game.pk }};
+
         // WEB SOCKETS
         let pk_game = {{ game.pk }};
         let gameSocket = new WebSocket(
             'ws://' + window.location.host +
             '/ws/games/' + pk_game);
-
-        DJANGO_IMAGE_URL = '{% static 'games/img/'%}';
 
         gameSocket.onopen = function(e) {
             gameSocket.send(JSON.stringify({
@@ -40,8 +41,9 @@
             const type = data['type'];
             switch(type) {
                 case 'startPositions':
-                    updateCurrentPiecesPositions(data['positions']);
-                    drawPieces();
+                    console.log("Received positions.");
+                    setOfPieces.updateCurrentPiecesPositions(data['positions']);
+                    setOfPieces.drawPieces();
                     break;
                 case 'positions_update':
                     let positions = data['message'];
@@ -54,6 +56,5 @@
         gameSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
-
     </script>
 {% endblock %}
