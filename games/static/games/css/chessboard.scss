@@ -2,14 +2,22 @@ $maxCanvasWidth: 700px;
 
 #chess-container {
   width: 100%;
+  height: $maxCanvasWidth;
   display: block;
-  border: 5px ridge red;
+  // border: 5px ridge red;
+  padding: 0;
 
-  #chess-canvas {
+  .my-canvas {
     width: 100%;
     max-width: $maxCanvasWidth;
     padding: 0;
     border:2px solid #d3d3d3;
+    position:absolute;
+    z-index: 100;
+  }
+
+  #select-canvas {
+    z-index: 150;
   }
 }
 

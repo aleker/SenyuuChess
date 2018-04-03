@@ -1,6 +1,8 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
+from games.models import Game
+
 # A channel is a mailbox where messages can be sent to. Each channel has a name.
 # Anyone who has the name of a channel can send a message to the channel.
 
@@ -14,6 +16,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         super().__init__(scope)
         self.game_name = self.scope['url_route']['kwargs']['pk_game']
         self.game_group_name = 'game_%s' % self.game_name
+        self.game_object = Game.objects.get(pk=self.game_name)
 
     async def connect(self):
         # Join room group
@@ -21,7 +24,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game_group_name,
             self.channel_name
         )
-
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -31,33 +33,16 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_type = text_data_json['type']
 
-        #     # Send message to room group
-        #     await self.channel_layer.group_send(
-        #         self.game_group_name, {
-        #             'type': 'hello_message_broadcast',
-        #             'message': text_data_json['message']
-        #         }
-        #     )
-        if message_type == 'hello_message':
+        if message_type == 'onOpen':
             await self.send(text_data=json.dumps({
-                'type': 'hello_message_server',
-                'message': "Hello message from server."
+                'type': 'startPositions',
+                'positions': json.loads(self.game_object.piecesPositions)
             }))
         else:
             print("Strange message type!")
 
-    # Receive message from room group (sent type <- game_message)
-    async def hello_message_broadcast(self, event):
-        message = event['message']
-        print("Message: ", message)
 
-        # Send message to WebSocket
-        await self.send(text_data=json.dumps({
-            'type': 'hello_message_server',
-            'message': "Hello message from server."
-        }))

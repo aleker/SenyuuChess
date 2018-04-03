@@ -11,7 +11,7 @@ whiteImgName = 'SenyuuChess_white.png';
 blackImgName = 'SenyuuChess_black.png';
 
 // piece selection:
-SELECT_LINE_WIDTH = '3px';
+SELECT_LINE_WIDTH = 3;
 HIGHLIGHT_COLOUR = 'blue';
 
 // PIECES
@@ -28,22 +28,26 @@ IN_PLAY = 0;
 RIP = 1;
 
 var chessCanvas = null;
+var selectCanvas = null;
 var ctx = null;
+var ctxSel = null;
 var white_pieces = null;
 var black_pieces = null;
 var currentPiecePositions = null;
 
 document.addEventListener('DOMContentLoaded', function () {
     chessCanvas = document.getElementById("chess-canvas");
+    selectCanvas = document.getElementById("select-canvas");
     ctx = chessCanvas.getContext("2d");
     if (!ctx) {
         alert("Canvas not supported!");
         return;
     }
+    ctxSel = selectCanvas.getContext("2d");
     BLOCK_SIZE = chessCanvas.height / NUMBER_OF_ROWS;
     drawBoard();
     prepareImages();
-    chessCanvas.addEventListener('click', board_click, false);
+    selectCanvas.addEventListener('click', board_click, false);
 
 }, false);
 
@@ -208,7 +212,7 @@ function getPieceAtBlock(clickedBlock, teamColor) {
             pieceAtBlock = getPieceAtBlock(clickedBlock, COLOUR_BLACK);
     }
     else {
-        var team = (currentTurn === COLOUR_BLACK ?
+        var team = (teamColor === COLOUR_BLACK ?
         currentPiecePositions.black : currentPiecePositions.white);
 
         for (var iPieceCounter = 0; iPieceCounter < team.length; iPieceCounter++) {
@@ -218,7 +222,6 @@ function getPieceAtBlock(clickedBlock, teamColor) {
                 curPiece.row === clickedBlock.row) {
 
                 pieceAtBlock = curPiece;
-                pieceAtBlock.color = teamColor;
                 pieceAtBlock.id = iPieceCounter;
                 break;
             }
@@ -228,10 +231,11 @@ function getPieceAtBlock(clickedBlock, teamColor) {
 }
 
 function selectPiece(pieceAtBlock) {
+    // TODO fix rectangle size
     // Draw outline
-    ctx.lineWidth = SELECT_LINE_WIDTH;
-    ctx.strokeStyle = HIGHLIGHT_COLOUR;
-    ctx.strokeRect((pieceAtBlock.col * BLOCK_SIZE) + SELECT_LINE_WIDTH,
+    ctxSel.lineWidth = SELECT_LINE_WIDTH;
+    ctxSel.strokeStyle = HIGHLIGHT_COLOUR;
+    ctxSel.strokeRect((pieceAtBlock.col * BLOCK_SIZE) + SELECT_LINE_WIDTH,
         (pieceAtBlock.row * BLOCK_SIZE) + SELECT_LINE_WIDTH,
         BLOCK_SIZE - (SELECT_LINE_WIDTH * 2),
         BLOCK_SIZE - (SELECT_LINE_WIDTH * 2));
@@ -239,10 +243,9 @@ function selectPiece(pieceAtBlock) {
     selectedPiece = pieceAtBlock;
 }
 
-function deselectPiece() {
-    // TODO
+function deselectPiece(context) {
+    context.clearRect(0, 0, selectCanvas.width, selectCanvas.height);
 }
-
 
 function processMove(clickedBlock) {
     var pieceAtBlock = getPieceAtBlock(clickedBlock, false);
@@ -267,7 +270,7 @@ function isMyAlly(clickedPieceColor) {
 }
 
 function changeSelectedPiece(newPieceToSelect) {
-    deselectPiece();
+    deselectPiece(ctxSel);
     selectPiece(newPieceToSelect)
 }
 
@@ -333,7 +336,8 @@ function movePiece(clickedBlock, enemyPiece) {
     // DRAW PIECE IN NEW POSITION
     currentPiecePositions[teamColor][selectedPiece.id].col = clickedBlock.col;
     currentPiecePositions[teamColor][selectedPiece.id].row = clickedBlock.row;
-    drawPiece(selectedPiece, (currentTurn === COLOUR_BLACK));
+    drawPiece(selectedPiece, (currentTurn === COLOUR_BLACK), true);
+    deselectPiece(ctxSel);
 
     // CLEAR TURN AND SELECTED PIECE
     currentTurn = (currentTurn === COLOUR_WHITE ? COLOUR_BLACK : COLOUR_WHITE);

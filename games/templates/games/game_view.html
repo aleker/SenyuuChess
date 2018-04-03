@@ -10,7 +10,10 @@
     <div class="panel-heading">{{ object.game }}</div>
     <div class="panel-body">
         <dev id="chess-container">
-            <canvas id="chess-canvas" width="560" height="560" >
+            <canvas id="chess-canvas" class="my-canvas" width="560" height="560" >
+            Your browser does not support the HTML5 canvas tag.
+            </canvas>
+            <canvas id="select-canvas" class="my-canvas" width="560" height="560" >
             Your browser does not support the HTML5 canvas tag.
             </canvas>
         </dev>
@@ -18,8 +21,8 @@
 
     <script>
         // WEB SOCKETS
-        var pk_game = {{ game.pk }};
-        var gameSocket = new WebSocket(
+        let pk_game = {{ game.pk }};
+        let gameSocket = new WebSocket(
             'ws://' + window.location.host +
             '/ws/games/' + pk_game);
 
@@ -27,24 +30,21 @@
 
         gameSocket.onopen = function(e) {
             gameSocket.send(JSON.stringify({
-                'type': "hello_message",
-                'message': "Hello from client!"
+                'type': "onOpen"
             }));
-            console.log("Message sent.");
+            console.log("SOCKET CONNECTION.");
         };
 
         gameSocket.onmessage = function(e) {
-            var data = JSON.parse(e.data);
-            var type = data['type'];
+            const data = JSON.parse(e.data);
+            const type = data['type'];
             switch(type) {
-                case 'hello_message_server':
-                    console.log("Received message: " + data['message']);
-                    var chessScript = document.getElementById('chess-script');
-                    updateCurrentPiecesPositions({{ game.piecesPositions|safe }});
+                case 'startPositions':
+                    updateCurrentPiecesPositions(data['positions']);
                     drawPieces();
                     break;
                 case 'positions_update':
-                    var positions = data['message'];
+                    let positions = data['message'];
                     break;
                 default:
                     console.log("Strange message from server!");
