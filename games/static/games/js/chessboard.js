@@ -67,7 +67,6 @@ function processSelection(clickedField) {
     const clickedPiece = setOfPieces.checkIfPieceClicked(clickedField);
     if (clickedPiece !== false) {
         chessboard.selectField(clickedPiece);
-        setOfPieces.selectedPiece = clickedPiece;
     }
 }
 
@@ -112,7 +111,6 @@ function movePiece(clickedBlock, enemyPiece) {
 
     // CLEAR TURN AND SELECTED PIECE
     setOfPieces.currentTurn = (setOfPieces.currentTurn === COLOUR_WHITE ? COLOUR_BLACK : COLOUR_WHITE);
-    setOfPieces.selectedPiece = null;
 }
 
 /****************
@@ -168,6 +166,7 @@ class Chessboard {
     }
 
     selectField(pieceAtBlock) {
+        setOfPieces.selectedPiece = pieceAtBlock;
         // Draw outline
         this.ctxSel.lineWidth = SELECT_LINE_WIDTH;
         this.ctxSel.strokeStyle = HIGHLIGHT_COLOUR;
@@ -178,6 +177,7 @@ class Chessboard {
     }
 
     deselectField() {
+        setOfPieces.selectedPiece = null;
         this.ctxSel.clearRect(0, 0, this.selectCanvas.width, this.selectCanvas.height);
     }
 
