@@ -1,4 +1,5 @@
 {
+  "currentTurn": "white",
   "white": [
     {
       "piece": 1,

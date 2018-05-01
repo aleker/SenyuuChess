@@ -31,6 +31,10 @@ let setOfPieces = null;
 let chessboard = null;
 let gameSocket = null;
 
+/****************
+* MAIN
+*****************/
+
 document.addEventListener('DOMContentLoaded', function () {
     chessboard = new Chessboard(document.getElementById("chess-canvas"), document.getElementById("select-canvas"));
     setOfPieces = new SetOfPieces();
@@ -52,39 +56,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }, false);
 
 }, false);
-
-/****************
-* GAMESOCKET
-*****************/
-function setSocket() {
-    gameSocket.onopen = function (e) {
-        gameSocket.send(JSON.stringify({
-            'type': "onOpen"
-        }));
-        console.log("SOCKET CONNECTION.");
-    };
-
-    gameSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        const type = data['type'];
-        switch(type) {
-            case 'startPositions':
-                console.log("Received positions.");
-                setOfPieces.updateCurrentPiecesPositions(data['positions']);
-                setOfPieces.drawPieces();
-                break;
-            case 'positions_update':
-                let positions = data['message'];
-                break;
-            default:
-                console.log("Strange message from server!");
-        }
-    };
-
-    gameSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
-}
 
 function computeClickCoordinates(ev) {
     let x, y;
@@ -123,7 +94,17 @@ function processMove(clickedBlock) {
 
 function tryToMove(clickedBlock, enemyPiece) {
     if (SetOfPieces.isMovePermitted(setOfPieces.selectedPiece, clickedBlock, enemyPiece) === true) {
+        let selected_piece = JSON.parse(JSON.stringify(setOfPieces.selectedPiece));
         movePiece(clickedBlock, enemyPiece);
+        // send message with new positions
+        sendMessage({
+            'type': 'updatePositions',
+            'newPositions': setOfPieces.currentPiecePositions,
+            'selectedPiece': selected_piece,
+            'clickedBlock': clickedBlock,
+            'enemyPiece': enemyPiece,
+            'positionVersion': setOfPieces.positionVersion
+        });
     }
 }
 
@@ -131,8 +112,8 @@ function movePiece(clickedBlock, enemyPiece) {
     // Clear the block in the original position
     chessboard.drawField(setOfPieces.selectedPiece.col, setOfPieces.selectedPiece.row);
 
-    let teamColor = setOfPieces.currentTurn;
-    let oppositeColor = (setOfPieces.currentTurn !== WHITE_TEAM ? WHITE_TEAM : BLACK_TEAM);
+    let teamColor = setOfPieces.currentPiecePositions.currentTurn;
+    let oppositeColor = (setOfPieces.currentPiecePositions.currentTurn !== WHITE_TEAM ? WHITE_TEAM : BLACK_TEAM);
 
     // REMOVE ENEMY
     if (enemyPiece !== null) {
@@ -144,11 +125,12 @@ function movePiece(clickedBlock, enemyPiece) {
     // DRAW PIECE IN NEW POSITION
     setOfPieces.currentPiecePositions[teamColor][setOfPieces.selectedPiece.id].col = clickedBlock.col;
     setOfPieces.currentPiecePositions[teamColor][setOfPieces.selectedPiece.id].row = clickedBlock.row;
-    setOfPieces.drawPiece(setOfPieces.selectedPiece, (setOfPieces.currentTurn === BLACK_TEAM), true);
+    setOfPieces.drawPiece(setOfPieces.selectedPiece, (setOfPieces.currentPiecePositions.currentTurn === BLACK_TEAM), true);
     chessboard.deselectField();
 
     // CLEAR TURN AND SELECTED PIECE
-    setOfPieces.currentTurn = (setOfPieces.currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
+    setOfPieces.currentPiecePositions.currentTurn = (setOfPieces.currentPiecePositions.currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
+    setOfPieces.positionVersion++;
 }
 
 /****************
@@ -243,7 +225,7 @@ class SetOfPieces {
         this.IMG_BLOCK_SIZE = 70;
         this.currentPiecePositions = null;
         this.selectedPiece = null;
-        this.currentTurn = WHITE_TEAM;
+        this.positionVersion = 0;
     };
 
     updateCurrentPiecesPositions(newPiecePositionsJson) {
@@ -289,7 +271,7 @@ class SetOfPieces {
     *****************/
 
     checkIfPieceClicked(clickedField) {
-        let pieceOnField = this.getPieceAtBlock(clickedField, this.currentTurn);
+        let pieceOnField = this.getPieceAtBlock(clickedField, this.currentPiecePositions.currentTurn);
         if (pieceOnField !== null) return pieceOnField;
         else return false;
     };
@@ -322,7 +304,7 @@ class SetOfPieces {
     };
 
     isMyAlly(clickedPieceColor) {
-        return (clickedPieceColor === this.currentTurn)
+        return (clickedPieceColor === this.currentPiecePositions.currentTurn)
     };
 
     static isMovePermitted(selectedPiece, clickedBlock, enemyPiece) {
@@ -368,6 +350,50 @@ class SetOfPieces {
         return bCanMove;
     }
 }
+
+/****************
+* GAMESOCKET
+*****************/
+function setSocket() {
+    gameSocket.onopen = function (e) {
+        gameSocket.send(JSON.stringify({
+            'type': "onOpen"
+        }));
+        console.log("SOCKET CONNECTION.");
+    };
+
+    gameSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const type = data['type'];
+        switch(type) {
+            case 'startPositions':
+                console.log("Received positions.");
+                setOfPieces.updateCurrentPiecesPositions(data['positions']);
+                setOfPieces.drawPieces();
+                break;
+            case 'updated_positions':
+                console.log("Received updated positions.");
+                if (setOfPieces.positionVersion < data["positionVersion"]) {
+                    console.log("Update positions.");
+                    setOfPieces.selectedPiece = setOfPieces.getPieceAtBlock(
+                        {'col': data['selectedPiece'].col, 'row': data['selectedPiece'].row }, false);
+                    movePiece(data['clickedBlock'], data['enemyPiece']);
+                }
+                break;
+            default:
+                console.log("Strange message from server!");
+        }
+    };
+
+    gameSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+}
+
+function sendMessage(jsonMessage) {
+    gameSocket.send(JSON.stringify(jsonMessage));
+}
+
 
 
 /*
