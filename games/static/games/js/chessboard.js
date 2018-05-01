@@ -1,8 +1,8 @@
 // STYLE
 // board:
 NUMBER_OF_ROWS = 8;
-COLOUR_WHITE = '#ffffff';
-COLOUR_BLACK = '#000000';
+COLOUR_WHITE = 'white';
+COLOUR_BLACK = 'black';
 
 // pieces:
 whiteImgName = 'SenyuuChess_white.png';
