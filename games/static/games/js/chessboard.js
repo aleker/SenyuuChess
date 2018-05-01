@@ -239,6 +239,7 @@ class SetOfPieces {
 
     drawTeamOfPieces(team, isBlackTeam, isHappy) {
         for (let pieceNo = 0; pieceNo < team.length; pieceNo++) {
+            if (team[pieceNo].status === RIP) continue;
             this.drawPiece(team[pieceNo], isBlackTeam, isHappy);
         }
     }
@@ -312,37 +313,27 @@ class SetOfPieces {
 
         switch (selectedPiece.piece) {
             case PIECE_PAWN:
-                // TODO
+                // TODO isMovePermited
             break;
 
             case PIECE_CASTLE_1 || PIECE_CASTLE_2:
-
-                // TODO
-
+                // TODO isMovePermited
             break;
 
             case PIECE_ROUKE:
-
-                // TODO
-
+                // TODO isMovePermited
             break;
 
             case PIECE_BISHOP_1 || PIECE_BISHOP_2:
-
-                // TODO
-
+                // TODO isMovePermited
             break;
 
             case PIECE_QUEEN:
-
-                // TODO
-
+                // TODO isMovePermited
             break;
 
             case PIECE_KING:
-
-                // TODO
-
+               // TODO isMovePermited
             break;
         }
 

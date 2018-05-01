@@ -36,5 +36,8 @@ class RoomDetailView(DetailView):
     pk_url_kwarg = "pk_room"
 
     def get_context_data(self, **kwargs):
+        # TODO enter if know password
+        # TODO assign color (let them choose?), the rest can observe?
+        # TODO delete game -> create new game
         context = super().get_context_data(**kwargs)
         return context

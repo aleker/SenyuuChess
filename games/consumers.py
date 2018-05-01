@@ -44,6 +44,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'positions': json.loads(self.game_object.piecesPositions)
             }))
         elif message_type == 'updatePositions':
+            # TODO ensure if his turn to update
             if self.positionVersion < text_data_json['positionVersion']:
                 self.positionVersion = text_data_json['positionVersion']
                 self.game_object.piecesPositions = json.dumps(text_data_json['newPositions'])
