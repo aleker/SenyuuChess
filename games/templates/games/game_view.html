@@ -22,39 +22,5 @@
     <script>
         DJANGO_IMAGE_URL = '{% static 'games/img/'%}';
         PK_GAME = {{ game.pk }};
-
-        // WEB SOCKETS
-        let pk_game = {{ game.pk }};
-        let gameSocket = new WebSocket(
-            'ws://' + window.location.host +
-            '/ws/games/' + pk_game);
-
-        gameSocket.onopen = function(e) {
-            gameSocket.send(JSON.stringify({
-                'type': "onOpen"
-            }));
-            console.log("SOCKET CONNECTION.");
-        };
-
-        gameSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            const type = data['type'];
-            switch(type) {
-                case 'startPositions':
-                    console.log("Received positions.");
-                    setOfPieces.updateCurrentPiecesPositions(data['positions']);
-                    setOfPieces.drawPieces();
-                    break;
-                case 'positions_update':
-                    let positions = data['message'];
-                    break;
-                default:
-                    console.log("Strange message from server!");
-            }
-        };
-
-        gameSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
     </script>
 {% endblock %}

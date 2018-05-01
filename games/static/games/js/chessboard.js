@@ -27,12 +27,15 @@ RIP = 1;
 
 let setOfPieces = null;
 let chessboard = null;
+let gameSocket = null;
 
 document.addEventListener('DOMContentLoaded', function () {
     chessboard = new Chessboard(document.getElementById("chess-canvas"), document.getElementById("select-canvas"));
     setOfPieces = new SetOfPieces();
     setOfPieces.white_pieces.onload = function () {
         setOfPieces.IMG_BLOCK_SIZE = setOfPieces.white_pieces.width / NUMBER_OF_ROWS;
+        gameSocket = new WebSocket('ws://' + window.location.host + '/ws/games/' + PK_GAME);
+        setSocket();
     };
     chessboard.draw();
 
@@ -47,6 +50,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }, false);
 
 }, false);
+
+/****************
+* GAMESOCKET
+*****************/
+function setSocket() {
+    gameSocket.onopen = function (e) {
+        gameSocket.send(JSON.stringify({
+            'type': "onOpen"
+        }));
+        console.log("SOCKET CONNECTION.");
+    };
+
+    gameSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const type = data['type'];
+        switch(type) {
+            case 'startPositions':
+                console.log("Received positions.");
+                setOfPieces.updateCurrentPiecesPositions(data['positions']);
+                setOfPieces.drawPieces();
+                break;
+            case 'positions_update':
+                let positions = data['message'];
+                break;
+            default:
+                console.log("Strange message from server!");
+        }
+    };
+
+    gameSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+}
 
 function computeClickCoordinates(ev) {
     let x, y;
