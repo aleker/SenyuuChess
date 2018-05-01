@@ -1,12 +1,14 @@
 // STYLE
 // board:
 NUMBER_OF_ROWS = 8;
-COLOUR_WHITE = 'white';
-COLOUR_BLACK = 'black';
+WHITE_COLOR = '#ffffff';
+BLACK_COLOR = '#000000';
 
 // pieces:
 whiteImgName = 'SenyuuChess_white.png';
 blackImgName = 'SenyuuChess_black.png';
+WHITE_TEAM = 'white';
+BLACK_TEAM = 'black';
 
 // piece selection:
 SELECT_LINE_WIDTH = 3;
@@ -130,7 +132,7 @@ function movePiece(clickedBlock, enemyPiece) {
     chessboard.drawField(setOfPieces.selectedPiece.col, setOfPieces.selectedPiece.row);
 
     let teamColor = setOfPieces.currentTurn;
-    let oppositeColor = (setOfPieces.currentTurn !== COLOUR_WHITE ? COLOUR_WHITE : COLOUR_BLACK);
+    let oppositeColor = (setOfPieces.currentTurn !== WHITE_TEAM ? WHITE_TEAM : BLACK_TEAM);
 
     // REMOVE ENEMY
     if (enemyPiece !== null) {
@@ -142,11 +144,11 @@ function movePiece(clickedBlock, enemyPiece) {
     // DRAW PIECE IN NEW POSITION
     setOfPieces.currentPiecePositions[teamColor][setOfPieces.selectedPiece.id].col = clickedBlock.col;
     setOfPieces.currentPiecePositions[teamColor][setOfPieces.selectedPiece.id].row = clickedBlock.row;
-    setOfPieces.drawPiece(setOfPieces.selectedPiece, (setOfPieces.currentTurn === COLOUR_BLACK), true);
+    setOfPieces.drawPiece(setOfPieces.selectedPiece, (setOfPieces.currentTurn === BLACK_TEAM), true);
     chessboard.deselectField();
 
     // CLEAR TURN AND SELECTED PIECE
-    setOfPieces.currentTurn = (setOfPieces.currentTurn === COLOUR_WHITE ? COLOUR_BLACK : COLOUR_WHITE);
+    setOfPieces.currentTurn = (setOfPieces.currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
 }
 
 /****************
@@ -188,9 +190,9 @@ class Chessboard {
     static getBlockColour(rowNo, fieldNo) {
         let color;
         if (rowNo % 2)
-            color = (fieldNo % 2 ? COLOUR_BLACK : COLOUR_WHITE);
+            color = (fieldNo % 2 ? BLACK_COLOR : WHITE_COLOR);
         else
-            color = (fieldNo % 2 ? COLOUR_WHITE : COLOUR_BLACK);
+            color = (fieldNo % 2 ? WHITE_COLOR : BLACK_COLOR);
         return color;
     };
 
@@ -241,7 +243,7 @@ class SetOfPieces {
         this.IMG_BLOCK_SIZE = 70;
         this.currentPiecePositions = null;
         this.selectedPiece = null;
-        this.currentTurn = COLOUR_WHITE;
+        this.currentTurn = WHITE_TEAM;
     };
 
     updateCurrentPiecesPositions(newPiecePositionsJson) {
@@ -296,12 +298,12 @@ class SetOfPieces {
         let pieceAtBlock = null;
 
         if (teamColor === false) {
-            pieceAtBlock = this.getPieceAtBlock(clickedBlock, COLOUR_WHITE);
+            pieceAtBlock = this.getPieceAtBlock(clickedBlock, WHITE_TEAM);
             if (pieceAtBlock === null)
-                pieceAtBlock = this.getPieceAtBlock(clickedBlock, COLOUR_BLACK);
+                pieceAtBlock = this.getPieceAtBlock(clickedBlock, BLACK_TEAM);
         }
         else {
-            let team = (teamColor === COLOUR_BLACK ?
+            let team = (teamColor === BLACK_TEAM ?
             this.currentPiecePositions.black : this.currentPiecePositions.white);
 
             for (let iPieceCounter = 0; iPieceCounter < team.length; iPieceCounter++) {
