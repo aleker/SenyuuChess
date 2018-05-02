@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -6,7 +5,7 @@ from django.views.generic import *
 from django.contrib import messages
 
 from rooms.decorators import login_room_authenticated
-from rooms.forms import LoginRoomForm
+from rooms.forms import LoginRoomForm, RoomCreateForm
 from rooms.models import Room
 
 
@@ -48,8 +47,8 @@ class RoomLogin(FormView):
 
 class RoomCreate(CreateView):
     model = Room
+    form_class = RoomCreateForm
     template_name_suffix = '_create_form'
-    fields = ['id', 'password']
 
     def get_success_url(self):
         original_password = self.object.password
