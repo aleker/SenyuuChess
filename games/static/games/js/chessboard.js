@@ -135,20 +135,8 @@ function movePiece(clickedBlock, enemyPiece) {
 
     // CLEAR TURN AND SELECTED PIECE
     setOfPieces.currentPiecePositions.currentTurn = (setOfPieces.currentPiecePositions.currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
+    changePlayersTurnClass(setOfPieces.currentPiecePositions.currentTurn);
     setOfPieces.positionVersion++;
-}
-
-function changeSpotStatus(color, value) {
-    if (spotsList[color] === spotStateEnum.me) {
-        if (value == 0) throw "Not complete info!";
-    }
-    else {
-        spotsList[color] = value;
-    }
-}
-
-function printSpotStatus() {
-    console.log("SpotStatus: white=" + spotsList[WHITE_TEAM] + ", black=" + spotsList[BLACK_TEAM]);
 }
 
 /****************
@@ -248,6 +236,7 @@ class SetOfPieces {
 
     updateCurrentPiecesPositions(newPiecePositionsJson) {
         this.currentPiecePositions = newPiecePositionsJson;
+        changePlayersTurnClass(this.currentPiecePositions.currentTurn);
     };
 
     drawPieces() {
@@ -363,6 +352,40 @@ class SetOfPieces {
 /****************
 * GAMESOCKET
 *****************/
+function changeSpotStatus(color, value) {
+    if (spotsList[color] === spotStateEnum.me) {
+        if (value == 0) throw "Not complete info!";
+    }
+    else {
+        spotsList[color] = value;
+    }
+    updateNoPlayerClasses();
+}
+
+function printSpotStatus() {
+    console.log("SpotStatus: white=" + spotsList[WHITE_TEAM] + ", black=" + spotsList[BLACK_TEAM]);
+}
+
+function updateNoPlayerClasses() {
+    jQuery.each(spotsList, function(key, val) {
+        if (val == 0) setNoPlayerClass(key, true);
+        else setNoPlayerClass(key, false);
+    });
+}
+
+function setNoPlayerClass(playerColor, choice) {
+    if (choice === true)
+        document.getElementById(playerColor + '-player').classList.add('noPlayer');
+    else
+        document.getElementById(playerColor + '-player').classList.remove('noPlayer');
+}
+
+function changePlayersTurnClass(playerColor) {
+    document.getElementById(playerColor + '-player').classList.add('playersTurn');
+    let enemyColor = (playerColor === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
+    document.getElementById(enemyColor + '-player').classList.remove('playersTurn');
+}
+
 function setSocket() {
     gameSocket.onopen = function (e) {
         gameSocket.send(JSON.stringify({
@@ -419,7 +442,6 @@ function setSocket() {
 function sendMessage(jsonMessage) {
     gameSocket.send(JSON.stringify(jsonMessage));
 }
-
 
 
 /*

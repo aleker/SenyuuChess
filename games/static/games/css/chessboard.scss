@@ -1,7 +1,42 @@
 $maxCanvasWidth: 700px;
 
+$white_main: white;
+$white-secondary: #686c6c;
+$black-main: rgba(32, 32, 32, 0.93);
+$black-secondary: #101010;
+
 .alert {
     display: none;
+}
+
+#players {
+  display: block;
+
+  .player {
+    display: inline-block;
+    box-shadow: #444444;
+  }
+
+  .noPlayer {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .30;
+  }
+
+  .playersTurn {
+    font-size: 40px;
+  }
+
+  #white-player {
+    background-color: $white_main;
+    border: 2px solid $white-secondary;
+  }
+
+  #black-player {
+    color: white;
+    background-color: $black-main;
+    border: 2px solid $black-secondary;
+  }
 }
 
 #chess-container {
