@@ -377,7 +377,8 @@ function setSocket() {
     };
 
     gameSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
+        console.error('Game socket closed unexpectedly.');
+        $('.alert').show();
     };
 }
 

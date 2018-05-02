@@ -1,5 +1,9 @@
 $maxCanvasWidth: 700px;
 
+.alert {
+    display: none;
+}
+
 #chess-container {
   width: 100%;
   height: $maxCanvasWidth;
