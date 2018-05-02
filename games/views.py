@@ -3,9 +3,11 @@ from django.shortcuts import redirect, get_object_or_404, render
 from django.views.generic import RedirectView
 
 from games.models import Game
+from rooms.decorators import login_room_authenticated
 from rooms.models import Room
 
 
+@login_room_authenticated
 def game(request, *args, **kwargs):
     pk_game = kwargs['pk_game']
     try:

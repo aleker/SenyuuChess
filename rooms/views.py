@@ -1,6 +1,4 @@
-from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.template import loader
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import *
@@ -51,6 +49,8 @@ class RoomCreate(CreateView):
     fields = ['id', 'password']
 
     def get_success_url(self):
+        original_password = self.object.password
+        self.request.session[self.object.pk] = original_password
         context = {
             'pk_room': self.object.pk,
             'pk_game': self.object.game.pk
@@ -66,7 +66,6 @@ class RoomDetailView(DetailView):
     pk_url_kwarg = "pk_room"
 
     def get_context_data(self, **kwargs):
-        # TODO enter if know password
         # TODO assign color (let them choose?), the rest can observe?
         # TODO delete game -> create new game
         context = super().get_context_data(**kwargs)
