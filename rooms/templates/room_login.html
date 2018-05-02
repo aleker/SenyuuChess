@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+<!--Load bootstrap-->
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 {% load static %}
 
 {% block title %}Rooms{% endblock %}
@@ -9,9 +14,15 @@
 {% endblock %}
 
 {% block content %}
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit" />
-    </form>
+    <h1>{{ room }}</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">Enter room password</div>
+        <div class="panel-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form layout='horizontal' %}
+                {% bootstrap_button "Submit password" button_class="btn-default" button_type="submit"%}
+            </form>
+        </div>
+    </div>
 {% endblock %}

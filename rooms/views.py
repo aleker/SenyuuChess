@@ -44,6 +44,11 @@ class RoomLogin(FormView):
     def form_invalid(self, form):
         pass
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["room"] = Room.objects.get(id=self.kwargs["pk_room"])
+        return context
+
 
 class RoomCreate(CreateView):
     model = Room
