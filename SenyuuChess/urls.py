@@ -15,10 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url, include
+from games.models import Game
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^rooms/', include('rooms.urls')),
     url(r'', include('home.urls')),
-
 ]
+
+
+def one_time_startup():
+    # TODO what with this clearing?
+    games = Game.objects.all()
+    for game in games:
+        game.white_player_socket_name = None
+        game.black_player_socket_name = None
+        game.save()
+    print("Games cleared!")
+
+
+one_time_startup()

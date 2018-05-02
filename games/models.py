@@ -41,6 +41,8 @@ class Game(models.Model):
     white_points = models.IntegerField(blank=False, null=False, default=0)
     black_points = models.IntegerField(blank=False, null=False, default=0)
     piecesPositions = models.CharField(max_length=500, null=True, blank=True)
+    white_player_socket_name = models.CharField(max_length=500, null=True, blank=True, default=None)
+    black_player_socket_name = models.CharField(max_length=500, null=True, blank=True, default=None)
 
     def __str__(self):
         return 'Game #%s' % self.pk

@@ -31,6 +31,11 @@ let setOfPieces = null;
 let chessboard = null;
 let gameSocket = null;
 
+// players
+let spotStateEnum = {"free":0, "occupied":1, "me":2};
+Object.freeze(spotStateEnum);
+let spotsList = {"white": spotStateEnum.free, "black": spotStateEnum.free};
+
 /****************
 * MAIN
 *****************/
@@ -131,6 +136,19 @@ function movePiece(clickedBlock, enemyPiece) {
     // CLEAR TURN AND SELECTED PIECE
     setOfPieces.currentPiecePositions.currentTurn = (setOfPieces.currentPiecePositions.currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
     setOfPieces.positionVersion++;
+}
+
+function changeSpotStatus(color, value) {
+    if (spotsList[color] === spotStateEnum.me) {
+        if (value == 0) throw "Not complete info!";
+    }
+    else {
+        spotsList[color] = value;
+    }
+}
+
+function printSpotStatus() {
+    console.log("SpotStatus: white=" + spotsList[WHITE_TEAM] + ", black=" + spotsList[BLACK_TEAM]);
 }
 
 /****************
@@ -357,12 +375,12 @@ function setSocket() {
         const data = JSON.parse(e.data);
         const type = data['type'];
         switch(type) {
-            case 'startPositions':
+            case 'start_positions':
                 console.log("Received positions.");
                 setOfPieces.updateCurrentPiecesPositions(data['positions']);
                 setOfPieces.drawPieces();
                 break;
-            case 'updated_positions':
+            case 'updated_positions_broadcast':
                 console.log("Received updated positions.");
                 if (setOfPieces.positionVersion < data["positionVersion"]) {
                     console.log("Update positions.");
@@ -370,6 +388,22 @@ function setSocket() {
                         {'col': data['selectedPiece'].col, 'row': data['selectedPiece'].row }, false);
                     movePiece(data['clickedBlock'], data['enemyPiece']);
                 }
+                break;
+            case 'player_color':
+                console.log("Received color info.");
+                changeSpotStatus(data["color"], spotStateEnum.me);
+                printSpotStatus();
+                break;
+            case 'free_spot_list':
+                console.log("Received free spots list.");
+                changeSpotStatus(WHITE_TEAM, data["color"]["white"]);
+                changeSpotStatus(BLACK_TEAM, data["color"]["black"]);
+                printSpotStatus();
+                break;
+            case 'free_spot_broadcast':
+                console.log("Received free spot.");
+                changeSpotStatus(data["color"], spotStateEnum.free);
+                printSpotStatus();
                 break;
             default:
                 console.log("Strange message from server!");

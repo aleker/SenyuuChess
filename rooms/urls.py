@@ -2,7 +2,6 @@ from django.conf.urls import url
 from django.urls import include
 
 from . import views
-from games import  views as game_views
 
 urlpatterns = [
     url(r'^$', views.RoomListView.as_view(), name='rooms_url'),
