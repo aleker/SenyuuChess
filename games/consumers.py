@@ -83,7 +83,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     # Receive message from game group
     async def updated_positions_broadcast(self, text_data_json):
-        print("Send locally.")
+        print("Send positions.")
         await self.send(text_data=json.dumps(text_data_json))
 
     async def free_spot_list(self, text_data_json):
