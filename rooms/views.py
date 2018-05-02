@@ -2,9 +2,11 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template import loader
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views.generic import *
 from django.contrib import messages
 
+from rooms.decorators import login_room_authenticated
 from rooms.forms import LoginRoomForm
 from rooms.models import Room
 
@@ -33,6 +35,7 @@ class RoomLogin(FormView):
             original_password = room.password
             pk_room = self.kwargs["pk_room"]
             if original_password == form_password:
+                self.request.session[pk_room] = original_password
                 return redirect('room_detail_url', pk_room=pk_room)
             else:
                 messages.add_message(self.request, messages.ERROR, 'Incorrect password!')
@@ -55,6 +58,7 @@ class RoomCreate(CreateView):
         return reverse('game_url', kwargs=context)
 
 
+@method_decorator(login_room_authenticated, name='dispatch')
 class RoomDetailView(DetailView):
     model = Room
     template_name_suffix = '_detail_view_form'
