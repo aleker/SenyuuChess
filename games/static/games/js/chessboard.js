@@ -368,8 +368,10 @@ function printSpotStatus() {
 
 function updateNoPlayerClasses() {
     jQuery.each(spotsList, function(key, val) {
-        if (val == 0) setNoPlayerClass(key, true);
+        if (val == spotStateEnum.free) setNoPlayerClass(key, true);
         else setNoPlayerClass(key, false);
+        if (val == spotStateEnum.me) document.getElementById(key + '-player').textContent = key + ' player (YOU)';
+        else document.getElementById(key + '-player').textContent = key + ' player';
     });
 }
 
@@ -384,6 +386,7 @@ function changePlayersTurnClass(playerColor) {
     document.getElementById(playerColor + '-player').classList.add('playersTurn');
     let enemyColor = (playerColor === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
     document.getElementById(enemyColor + '-player').classList.remove('playersTurn');
+    // inactive chessboard if not your turn
 }
 
 function setSocket() {
