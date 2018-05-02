@@ -20,7 +20,7 @@
             {% if room_list %}
                 <ul class="list-group">
                     {% for room in room_list %}
-                        <li class="list-group-item"><a href="{% url 'room_detail_url' pk_room=room.pk %}">{{ room }}</a>
+                        <li class="list-group-item"><a href="{% url 'room_login_url' pk_room=room.pk %}">{{ room }}</a>
                         </li>
                     {% endfor %}
                 </ul>

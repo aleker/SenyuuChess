@@ -1,8 +1,11 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.template import loader
 from django.urls import reverse
 from django.views.generic import *
 from django.contrib import messages
 
+from rooms.forms import LoginRoomForm
 from rooms.models import Room
 
 
@@ -14,6 +17,29 @@ class RoomListView(ListView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         return context
+
+
+class RoomLogin(FormView):
+    template_name = 'room_login.html'
+    form_class = LoginRoomForm
+    success_url = 'room_detail_url'
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        form_password = form.cleaned_data.get('password')
+        room = Room.objects.get(id=self.kwargs["pk_room"])
+        if room:
+            original_password = room.password
+            if original_password == form_password:
+                # return redirect('room_detail_url', {'pk_room': self.kwargs["pk_room"]})
+                return redirect('home.urls')
+            else:
+                messages.add_message(self.request, messages.ERROR, 'Incorrect password!')
+                return redirect('rooms_url')
+
+    def form_invalid(self, form):
+        pass
 
 
 class RoomCreate(CreateView):
