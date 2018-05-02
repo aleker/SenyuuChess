@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     chessboard.draw();
 
     chessboard.selectCanvas.addEventListener('click', function (ev) {
+        if (!isAuthorizedToMove()) return;
         let clickCoordinates = computeClickCoordinates(ev);
         let clickedField = chessboard.findField(clickCoordinates.x, clickCoordinates.y);
 
@@ -125,6 +126,7 @@ function movePiece(clickedBlock, enemyPiece) {
         // Clear beaten piece
         chessboard.drawField(enemyPiece.col, enemyPiece.row);
         setOfPieces.currentPiecePositions[oppositeColor][enemyPiece.id].status = RIP;
+        // TODO add sound :D
     }
 
     // DRAW PIECE IN NEW POSITION
@@ -352,9 +354,15 @@ class SetOfPieces {
 /****************
 * GAMESOCKET
 *****************/
+
+function isAuthorizedToMove() {
+    let currentTurn = setOfPieces.currentPiecePositions.currentTurn;
+    return (spotsList[currentTurn] === spotStateEnum.me);
+}
+
 function changeSpotStatus(color, value) {
     if (spotsList[color] === spotStateEnum.me) {
-        if (value == 0) throw "Not complete info!";
+        if (value === 0) throw "Not complete info!";
     }
     else {
         spotsList[color] = value;
@@ -368,9 +376,9 @@ function printSpotStatus() {
 
 function updateNoPlayerClasses() {
     jQuery.each(spotsList, function(key, val) {
-        if (val == spotStateEnum.free) setNoPlayerClass(key, true);
+        if (val === spotStateEnum.free) setNoPlayerClass(key, true);
         else setNoPlayerClass(key, false);
-        if (val == spotStateEnum.me) document.getElementById(key + '-player').textContent = key + ' player (YOU)';
+        if (val === spotStateEnum.me) document.getElementById(key + '-player').textContent = key + ' player (YOU)';
         else document.getElementById(key + '-player').textContent = key + ' player';
     });
 }
