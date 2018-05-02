@@ -31,12 +31,12 @@ class RoomLogin(FormView):
         room = Room.objects.get(id=self.kwargs["pk_room"])
         if room:
             original_password = room.password
+            pk_room = self.kwargs["pk_room"]
             if original_password == form_password:
-                # return redirect('room_detail_url', {'pk_room': self.kwargs["pk_room"]})
-                return redirect('home.urls')
+                return redirect('room_detail_url', pk_room=pk_room)
             else:
                 messages.add_message(self.request, messages.ERROR, 'Incorrect password!')
-                return redirect('rooms_url')
+                return redirect('room_login_url', pk_room=pk_room)
 
     def form_invalid(self, form):
         pass
