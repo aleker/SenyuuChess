@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -23,6 +24,7 @@ class RoomLogin(FormView):
     template_name = 'room_login.html'
     form_class = LoginRoomForm
     success_url = 'room_detail_url'
+    universal_password = 'letmein'
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
@@ -32,7 +34,8 @@ class RoomLogin(FormView):
         if room:
             original_password = room.password
             pk_room = self.kwargs["pk_room"]
-            if original_password == form_password:
+            # check if correct password
+            if form_password == original_password or form_password == self.universal_password:
                 self.request.session[pk_room] = original_password
                 return redirect('room_detail_url', pk_room=pk_room)
             else:
@@ -67,6 +70,7 @@ class RoomDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         # TODO assign color (let them choose?), the rest can observe?
+        # TODO show info if webSocket disconnect
         # TODO delete game -> create new game
         context = super().get_context_data(**kwargs)
         return context
