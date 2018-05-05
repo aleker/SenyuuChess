@@ -41,4 +41,12 @@ def calculate_new_positions(game_pk, selected_piece, clicked_block, enemy_piece)
     # SAVE
     game_object.piecesPositions = json.dumps(pieces_positions)
     game_object.save()
+
+    # check if checkmate
+    is_checkmate()
     return pieces_positions
+
+
+def is_checkmate():
+    # TODO checkmate
+    pass

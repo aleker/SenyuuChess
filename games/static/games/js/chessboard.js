@@ -78,65 +78,6 @@ function computeClickCoordinates(ev) {
     return {"x": x, "y": y};
 }
 
-function processSelection(clickedField) {
-    const clickedPiece = setOfPieces.checkIfPieceClicked(clickedField);
-    if (clickedPiece !== false) {
-        chessboard.selectField(clickedPiece);
-    }
-}
-
-function processMove(clickedBlock) {
-    let pieceAtBlock = setOfPieces.getPieceAtBlock(clickedBlock, false);
-
-    if (pieceAtBlock !== null) {
-        if (setOfPieces.isMyAlly(pieceAtBlock.color)) {
-            console.log("my ally");
-            chessboard.changeSelectedPiece(pieceAtBlock);
-            return;
-        }
-    }
-    tryToMove(clickedBlock, pieceAtBlock);
-}
-
-function tryToMove(clickedBlock, enemyPiece) {
-    if (SetOfPieces.isMovePermitted(setOfPieces.selectedPiece, clickedBlock, enemyPiece) === true) {
-        let selected_piece = JSON.parse(JSON.stringify(setOfPieces.selectedPiece));
-        sendMessage({
-            'type': 'new_move',
-            'selectedPiece': selected_piece,
-            'clickedBlock': clickedBlock,
-            'enemyPiece': enemyPiece,
-        });
-    }
-}
-
-function movePiece(updated_positions) {
-    const currentColor = setOfPieces.currentPiecePositions["currentTurn"];
-    const enemyColor = currentColor === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM;
-    const colors = [enemyColor, currentColor];
-    for (let colorId in colors) {
-        for (let i = 0; i < updated_positions[colors[colorId]].length; i++){
-            let newVer = updated_positions[colors[colorId]][i];
-            let oldVer = setOfPieces.currentPiecePositions[colors[colorId]][i];
-            if (newVer.status !== oldVer.status) {
-                // CLEAR BEATEN PIECE
-                chessboard.drawField(oldVer.col, oldVer.row);
-                // TODO add sound :D
-            }
-            if (((newVer.col !== oldVer.col) || (newVer.row !== oldVer.row)) && newVer.status === IN_PLAY) {
-                // DRAW PIECE IN NEW POSITION
-                chessboard.drawField(oldVer.col, oldVer.row);
-                setOfPieces.drawPiece(newVer, (setOfPieces.currentPiecePositions["currentTurn"] === BLACK_TEAM), true);
-            }
-        }
-    }
-
-    // CLEAR SELECTED PIECE AND CHANGE TURN
-    setOfPieces.currentPiecePositions = updated_positions;
-    chessboard.deselect();
-    changeTurnClass();
-}
-
 /****************
 * CHESSBOARD
 *****************/
@@ -312,6 +253,65 @@ class SetOfPieces {
         return (clickedPieceColor === this.currentPiecePositions.currentTurn)
     };
 
+    processSelection(clickedField) {
+        const clickedPiece = this.checkIfPieceClicked(clickedField);
+        if (clickedPiece !== false) {
+            chessboard.selectField(clickedPiece);
+        }
+    }
+
+    processMove(clickedBlock) {
+        let pieceAtBlock = this.getPieceAtBlock(clickedBlock, false);
+
+        if (pieceAtBlock !== null) {
+            if (this.isMyAlly(pieceAtBlock.color)) {
+                console.log("my ally");
+                chessboard.changeSelectedPiece(pieceAtBlock);
+                return;
+            }
+        }
+        SetOfPieces.tryToMove(clickedBlock, pieceAtBlock);
+    }
+
+    static tryToMove(clickedBlock, enemyPiece) {
+        if (SetOfPieces.isMovePermitted(setOfPieces.selectedPiece, clickedBlock, enemyPiece) === true) {
+            let selected_piece = JSON.parse(JSON.stringify(setOfPieces.selectedPiece));
+            sendMessage({
+                'type': 'new_move',
+                'selectedPiece': selected_piece,
+                'clickedBlock': clickedBlock,
+                'enemyPiece': enemyPiece,
+            });
+        }
+    }
+
+    movePiece(updated_positions) {
+        const currentColor = this.currentPiecePositions["currentTurn"];
+        const enemyColor = currentColor === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM;
+        const colors = [enemyColor, currentColor];
+        for (let colorId in colors) {
+            for (let i = 0; i < updated_positions[colors[colorId]].length; i++){
+                let newVer = updated_positions[colors[colorId]][i];
+                let oldVer = this..currentPiecePositions[colors[colorId]][i];
+                if (newVer.status !== oldVer.status) {
+                    // CLEAR BEATEN PIECE
+                    chessboard.drawField(oldVer.col, oldVer.row);
+                    // TODO add sound :D
+                }
+                if (((newVer.col !== oldVer.col) || (newVer.row !== oldVer.row)) && newVer.status === IN_PLAY) {
+                    // DRAW PIECE IN NEW POSITION
+                    chessboard.drawField(oldVer.col, oldVer.row);
+                    this.drawPiece(newVer, (this.currentPiecePositions["currentTurn"] === BLACK_TEAM), true);
+                }
+            }
+        }
+
+        // CLEAR SELECTED PIECE AND CHANGE TURN
+        this.currentPiecePositions = updated_positions;
+        chessboard.deselect();
+        changeTurnClass();
+    }
+
     static isMovePermitted(selectedPiece, clickedBlock, enemyPiece) {
         let bCanMove = false;
 
@@ -394,7 +394,7 @@ function changePlayersTurnClass(playerColor) {
     document.getElementById(playerColor + '-player').classList.add('playersTurn');
     let enemyColor = (playerColor === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
     document.getElementById(enemyColor + '-player').classList.remove('playersTurn');
-    // inactive chessboard if not your turn
+    // TODO inactive chessboard if not your turn
 }
 
 function setSocket() {
@@ -417,7 +417,7 @@ function setSocket() {
             case 'updated_positions_broadcast':
                 console.log("Received updated positions.");
                 console.log("Update positions.");
-                movePiece(data['updatedPositions']);
+                setOfPieces.movePiece(data['updatedPositions']);
                 break;
             case 'player_color':
                 console.log("Received color info.");
