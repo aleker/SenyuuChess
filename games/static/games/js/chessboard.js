@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let clickedField = chessboard.findField(clickCoordinates.x, clickCoordinates.y);
 
         if (setOfPieces.selectedPiece == null)
-            processSelection(clickedField);
+            setOfPieces.processSelection(clickedField);
         else
-            processMove(clickedField);
+            setOfPieces.processMove(clickedField);
     }, false);
 
 }, false);
@@ -274,15 +274,13 @@ class SetOfPieces {
     }
 
     static tryToMove(clickedBlock, enemyPiece) {
-        if (SetOfPieces.isMovePermitted(setOfPieces.selectedPiece, clickedBlock, enemyPiece) === true) {
-            let selected_piece = JSON.parse(JSON.stringify(setOfPieces.selectedPiece));
-            sendMessage({
-                'type': 'new_move',
-                'selectedPiece': selected_piece,
-                'clickedBlock': clickedBlock,
-                'enemyPiece': enemyPiece,
-            });
-        }
+        let selected_piece = JSON.parse(JSON.stringify(setOfPieces.selectedPiece));
+        sendMessage({
+            'type': 'new_move',
+            'selectedPiece': selected_piece,
+            'clickedBlock': clickedBlock,
+            'enemyPiece': enemyPiece,
+        });
     }
 
     updatePiecePositions(updated_positions) {
@@ -312,7 +310,7 @@ class SetOfPieces {
         changeTurnClass();
     }
 
-    static isMovePermitted(selectedPiece, clickedBlock, enemyPiece) {
+    displayPermittedMoves(selectedPiece) {
         let bCanMove = false;
 
         switch (selectedPiece.piece) {
