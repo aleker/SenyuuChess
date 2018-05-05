@@ -69,10 +69,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                             text_data_json["selectedPiece"],
                                                             text_data_json["clickedBlock"],
                                                             text_data_json["enemyPiece"])
-                await self.channel_layer.group_send(self.game_group_name, {
-                    'type': 'updated_positions_broadcast',
-                    'updatedPositions': updated_positions,
-                })
+                if updated_positions is not False:
+                    await self.channel_layer.group_send(self.game_group_name, {
+                        'type': 'updated_positions_broadcast',
+                        'updatedPositions': updated_positions,
+                    })
         else:
             print("Strange message type!")
 

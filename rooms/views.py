@@ -73,8 +73,6 @@ class RoomDetailView(DetailView):
     pk_url_kwarg = "pk_room"
 
     def get_context_data(self, **kwargs):
-        # TODO assign color (let them choose?), the rest can observe?
-        # TODO show info if webSocket disconnect
-        # TODO delete game -> create new game
+        # TODO!! delete game -> create new game
         context = super().get_context_data(**kwargs)
         return context

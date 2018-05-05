@@ -257,6 +257,7 @@ class SetOfPieces {
         const clickedPiece = this.checkIfPieceClicked(clickedField);
         if (clickedPiece !== false) {
             chessboard.selectField(clickedPiece);
+            setOfPieces.displayPermittedMoves(clickedPiece)
         }
     }
 
@@ -311,31 +312,27 @@ class SetOfPieces {
     }
 
     displayPermittedMoves(selectedPiece) {
+        // TODO displayPermittedMoves
         let bCanMove = false;
+        const colorOfSelectedPiece = setOfPieces.currentPiecePositions["currentTurn"];
 
         switch (selectedPiece.piece) {
             case PIECE_PAWN:
-                // TODO isMovePermited
             break;
 
             case PIECE_CASTLE_1 || PIECE_CASTLE_2:
-                // TODO isMovePermited
             break;
 
             case PIECE_ROUKE:
-                // TODO isMovePermited
             break;
 
             case PIECE_BISHOP_1 || PIECE_BISHOP_2:
-                // TODO isMovePermited
             break;
 
             case PIECE_QUEEN:
-                // TODO isMovePermited
             break;
 
             case PIECE_KING:
-               // TODO isMovePermited
             break;
         }
 
