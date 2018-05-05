@@ -314,7 +314,6 @@ class SetOfPieces {
     displayPermittedMoves(selectedPiece) {
         // TODO displayPermittedMoves
         let bCanMove = false;
-        const colorOfSelectedPiece = setOfPieces.currentPiecePositions["currentTurn"];
 
         switch (selectedPiece.piece) {
             case PIECE_PAWN:
