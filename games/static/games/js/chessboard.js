@@ -101,44 +101,40 @@ function processMove(clickedBlock) {
 function tryToMove(clickedBlock, enemyPiece) {
     if (SetOfPieces.isMovePermitted(setOfPieces.selectedPiece, clickedBlock, enemyPiece) === true) {
         let selected_piece = JSON.parse(JSON.stringify(setOfPieces.selectedPiece));
-        movePiece(clickedBlock, enemyPiece);
-        // send message with new positions
         sendMessage({
-            'type': 'updatePositions',
-            'newPositions': setOfPieces.currentPiecePositions,
+            'type': 'new_move',
             'selectedPiece': selected_piece,
             'clickedBlock': clickedBlock,
             'enemyPiece': enemyPiece,
-            'positionVersion': setOfPieces.positionVersion
         });
     }
 }
 
-function movePiece(clickedBlock, enemyPiece) {
-    // Clear the block in the original position
-    chessboard.drawField(setOfPieces.selectedPiece.col, setOfPieces.selectedPiece.row);
-
-    let teamColor = setOfPieces.currentPiecePositions.currentTurn;
-    let oppositeColor = (setOfPieces.currentPiecePositions.currentTurn !== WHITE_TEAM ? WHITE_TEAM : BLACK_TEAM);
-
-    // REMOVE ENEMY
-    if (enemyPiece !== null) {
-        // Clear beaten piece
-        chessboard.drawField(enemyPiece.col, enemyPiece.row);
-        setOfPieces.currentPiecePositions[oppositeColor][enemyPiece.id].status = RIP;
-        // TODO add sound :D
+function movePiece(updated_positions) {
+    const currentColor = setOfPieces.currentPiecePositions["currentTurn"];
+    const enemyColor = currentColor === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM;
+    const colors = [enemyColor, currentColor];
+    for (let colorId in colors) {
+        for (let i = 0; i < updated_positions[colors[colorId]].length; i++){
+            let newVer = updated_positions[colors[colorId]][i];
+            let oldVer = setOfPieces.currentPiecePositions[colors[colorId]][i];
+            if (newVer.status !== oldVer.status) {
+                // CLEAR BEATEN PIECE
+                chessboard.drawField(oldVer.col, oldVer.row);
+                // TODO add sound :D
+            }
+            if (((newVer.col !== oldVer.col) || (newVer.row !== oldVer.row)) && newVer.status === IN_PLAY) {
+                // DRAW PIECE IN NEW POSITION
+                chessboard.drawField(oldVer.col, oldVer.row);
+                setOfPieces.drawPiece(newVer, (setOfPieces.currentPiecePositions["currentTurn"] === BLACK_TEAM), true);
+            }
+        }
     }
 
-    // DRAW PIECE IN NEW POSITION
-    setOfPieces.currentPiecePositions[teamColor][setOfPieces.selectedPiece.id].col = clickedBlock.col;
-    setOfPieces.currentPiecePositions[teamColor][setOfPieces.selectedPiece.id].row = clickedBlock.row;
-    setOfPieces.drawPiece(setOfPieces.selectedPiece, (setOfPieces.currentPiecePositions.currentTurn === BLACK_TEAM), true);
-    chessboard.deselectField();
-
-    // CLEAR TURN AND SELECTED PIECE
-    setOfPieces.currentPiecePositions.currentTurn = (setOfPieces.currentPiecePositions.currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
-    changePlayersTurnClass(setOfPieces.currentPiecePositions.currentTurn);
-    setOfPieces.positionVersion++;
+    // CLEAR SELECTED PIECE AND CHANGE TURN
+    setOfPieces.currentPiecePositions = updated_positions;
+    chessboard.deselect();
+    changeTurnClass();
 }
 
 /****************
@@ -204,13 +200,13 @@ class Chessboard {
             this.BLOCK_SIZE - (SELECT_LINE_WIDTH * 2));
     }
 
-    deselectField() {
+    deselect() {
         setOfPieces.selectedPiece = null;
         this.ctxSel.clearRect(0, 0, this.selectCanvas.width, this.selectCanvas.height);
     }
 
     changeSelectedPiece(newPieceToSelect) {
-        this.deselectField();
+        this.deselect();
         this.selectField(newPieceToSelect);
     }
 }
@@ -233,7 +229,6 @@ class SetOfPieces {
         this.IMG_BLOCK_SIZE = 70;
         this.currentPiecePositions = null;
         this.selectedPiece = null;
-        this.positionVersion = 0;
     };
 
     updateCurrentPiecesPositions(newPiecePositionsJson) {
@@ -383,6 +378,11 @@ function updateNoPlayerClasses() {
     });
 }
 
+function changeTurnClass() {
+    // this.currentPiecePositions.currentTurn = (this.currentPiecePositions.currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
+    changePlayersTurnClass(setOfPieces.currentPiecePositions["currentTurn"]);
+}
+
 function setNoPlayerClass(playerColor, choice) {
     if (choice === true)
         document.getElementById(playerColor + '-player').classList.add('noPlayer');
@@ -416,25 +416,21 @@ function setSocket() {
                 break;
             case 'updated_positions_broadcast':
                 console.log("Received updated positions.");
-                if (setOfPieces.positionVersion < data["positionVersion"]) {
-                    console.log("Update positions.");
-                    setOfPieces.selectedPiece = setOfPieces.getPieceAtBlock(
-                        {'col': data['selectedPiece'].col, 'row': data['selectedPiece'].row }, false);
-                    movePiece(data['clickedBlock'], data['enemyPiece']);
-                }
+                console.log("Update positions.");
+                movePiece(data['updatedPositions']);
                 break;
             case 'player_color':
                 console.log("Received color info.");
                 changeSpotStatus(data["color"], spotStateEnum.me);
                 printSpotStatus();
                 break;
-            case 'free_spot_list':
+            case 'free_spots_list':
                 console.log("Received free spots list.");
                 changeSpotStatus(WHITE_TEAM, data["color"]["white"]);
                 changeSpotStatus(BLACK_TEAM, data["color"]["black"]);
                 printSpotStatus();
                 break;
-            case 'free_spot_broadcast':
+            case 'new_free_spot':
                 console.log("Received free spot.");
                 changeSpotStatus(data["color"], spotStateEnum.free);
                 printSpotStatus();

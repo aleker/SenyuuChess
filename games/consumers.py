@@ -1,7 +1,9 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
+from games.game_rules import *
 from games.models import Game
+
 
 # A channel is a mailbox where messages can be sent to. Each channel has a name.
 # Anyone who has the name of a channel can send a message to the channel.
@@ -17,7 +19,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.game_name = self.scope['url_route']['kwargs']['pk_game']
         self.game_group_name = 'game_%s' % self.game_name
         self.game_object = Game.objects.get(pk=self.game_name)
-        self.positionVersion = 0
 
     async def connect(self):
         # Join room group
@@ -35,7 +36,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             }))
         # send broadcast info about free spots
         await self.channel_layer.group_send(self.game_group_name, {
-            'type': 'free_spot_list',
+            'type': 'free_spots_list',
             'color': self.get_free_spots()
         })
 
@@ -44,7 +45,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         # send broadcast info about new free spot
         if color is not None:
             await self.channel_layer.group_send(self.game_group_name, {
-                'type': 'free_spot_broadcast',
+                'type': 'new_free_spot',
                 'color': color
             })
         # Leave room group
@@ -62,22 +63,16 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'type': 'start_positions',
                 'positions': json.loads(self.game_object.piecesPositions)
             }))
-        elif message_type == 'updatePositions':
-            # TODO ensure if his turn to update
-            if self.positionVersion < text_data_json['positionVersion']:
-                self.positionVersion = text_data_json['positionVersion']
-                self.game_object.piecesPositions = json.dumps(text_data_json['newPositions'])
-                self.game_object.save()
-                print("New position saved.")
-                # Send new position to room group
+        elif message_type == 'new_move':
+            if is_my_turn(self.game_name, self.channel_name):
+                updated_positions = calculate_new_positions(self.game_name,
+                                                            text_data_json["selectedPiece"],
+                                                            text_data_json["clickedBlock"],
+                                                            text_data_json["enemyPiece"])
                 await self.channel_layer.group_send(self.game_group_name, {
                     'type': 'updated_positions_broadcast',
-                    'selectedPiece': text_data_json["selectedPiece"],
-                    'clickedBlock': text_data_json["clickedBlock"],
-                    'enemyPiece': text_data_json["enemyPiece"],
-                    'positionVersion': text_data_json["positionVersion"]
-                    }
-                )
+                    'updatedPositions': updated_positions,
+                })
         else:
             print("Strange message type!")
 
@@ -86,13 +81,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         print("Send positions.")
         await self.send(text_data=json.dumps(text_data_json))
 
-    async def free_spot_list(self, text_data_json):
+    async def free_spots_list(self, text_data_json):
         # update game object
         self.game_object = Game.objects.get(pk=self.game_name)
         print("Send free spots list.")
         await self.send(text_data=json.dumps(text_data_json))
 
-    async def free_spot_broadcast(self, text_data_json):
+    async def new_free_spot(self, text_data_json):
         # update game object
         self.game_object = Game.objects.get(pk=self.game_name)
         print("Send info about new free spot.")
