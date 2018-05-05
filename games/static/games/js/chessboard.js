@@ -285,14 +285,14 @@ class SetOfPieces {
         }
     }
 
-    movePiece(updated_positions) {
+    updatePiecePositions(updated_positions) {
         const currentColor = this.currentPiecePositions["currentTurn"];
         const enemyColor = currentColor === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM;
         const colors = [enemyColor, currentColor];
         for (let colorId in colors) {
             for (let i = 0; i < updated_positions[colors[colorId]].length; i++){
                 let newVer = updated_positions[colors[colorId]][i];
-                let oldVer = this..currentPiecePositions[colors[colorId]][i];
+                let oldVer = this.currentPiecePositions[colors[colorId]][i];
                 if (newVer.status !== oldVer.status) {
                     // CLEAR BEATEN PIECE
                     chessboard.drawField(oldVer.col, oldVer.row);
@@ -417,7 +417,7 @@ function setSocket() {
             case 'updated_positions_broadcast':
                 console.log("Received updated positions.");
                 console.log("Update positions.");
-                setOfPieces.movePiece(data['updatedPositions']);
+                setOfPieces.updatePiecePositions(data['updatedPositions']);
                 break;
             case 'player_color':
                 console.log("Received color info.");
