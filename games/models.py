@@ -1,6 +1,8 @@
 import json
 
 import os
+from enum import Enum
+
 from django.db import models
 
 # https://docs.djangoproject.com/en/2.0/ref/models/fields/
@@ -30,6 +32,17 @@ from django.db import models
 # ForeignKey:
 # A many-to-one relationship.
 # ForeignKey.on_delete - decide what happens when an object referenced by a ForeignKey is deleted
+
+
+class PIECE(Enum):
+    PAWN = 0
+    CASTLE_1 = 1
+    CASTLE_2 = 2
+    ROUKE = 3
+    BISHOP_1 = 4
+    BISHOP_2 = 5
+    QUEEN = 6
+    KING = 7
 
 
 class Game(models.Model):
