@@ -62,9 +62,9 @@ def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece)
     if piece_type is PIECE.PAWN.value:
         available_move = check_pawn(selected_piece, clicked_block, enemy_piece)
     elif (piece_type is PIECE.CASTLE_1.value) or (piece_type is PIECE.CASTLE_2.value):
-        available_move = check_castle(game_pk, selected_piece, clicked_block, enemy_piece)
+        available_move = check_castle(game_pk, selected_piece, clicked_block)
     elif piece_type is PIECE.ROUKE.value:
-        pass
+        available_move = check_rouke(selected_piece, clicked_block)
     elif (piece_type is PIECE.BISHOP_1.value) or (piece_type is PIECE.BISHOP_2.value):
         pass
     elif piece_type is PIECE.QUEEN.value:
@@ -102,7 +102,7 @@ def check_pawn(selected_piece, clicked_block, enemy_piece):
     return False
 
 
-def check_castle(game_pk, selected_piece, clicked_block, enemy_piece):
+def check_castle(game_pk, selected_piece, clicked_block):
     # 1) Move |
     if is_in_col(selected_piece, clicked_block["col"]):
         between = get_all_field_coords_between(selected_piece["row"], clicked_block["row"])
@@ -116,6 +116,16 @@ def check_castle(game_pk, selected_piece, clicked_block, enemy_piece):
         for field_col in between:
             if check_if_any_piece_on_field(game_pk, {"col": field_col, "row": clicked_block["row"]}):
                 return False
+        return True
+    return False
+
+
+def check_rouke(selected_piece, clicked_block):
+    col_difference = abs(selected_piece["col"] - clicked_block["col"])
+    row_difference = abs(selected_piece["row"] - clicked_block["row"])
+    if col_difference == 2 and row_difference == 1:
+        return True
+    if col_difference == 1 and row_difference == 2:
         return True
     return False
 
