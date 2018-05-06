@@ -58,7 +58,7 @@ def is_checkmate():
 def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece):
     # TODO!! allowable move
     available_move = True
-    piece_type = selected_piece["piece"] if selected_piece["color"] is WHITE_TEAM else (7 - selected_piece["piece"])
+    piece_type = selected_piece["piece"]
     if piece_type is PIECE.PAWN.value:
         available_move = check_pawn(selected_piece, clicked_block, enemy_piece)
     elif (piece_type is PIECE.CASTLE_1.value) or (piece_type is PIECE.CASTLE_2.value):
