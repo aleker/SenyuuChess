@@ -115,7 +115,7 @@ def is_enemy_on_field(enemy, field):
 
 
 def is_black_team(piece):
-    return piece["color"] is BLACK_TEAM
+    return piece["color"] == BLACK_TEAM
 
 
 def is_in_row(piece, row_no):
