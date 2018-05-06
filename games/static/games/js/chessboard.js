@@ -190,7 +190,7 @@ class SetOfPieces {
     }
 
     drawPiece(curPiece, isBlackTeam, isHappy) {
-        let imageCoords = this.getImageCoords(curPiece.piece, isHappy);
+        let imageCoords = this.getImageCoords(this.getPieceNo(curPiece, isBlackTeam), isHappy);
         if (isBlackTeam) {
             chessboard.ctx.drawImage(this.black_pieces,
                 imageCoords.x, imageCoords.y, this.IMG_BLOCK_SIZE, this.IMG_BLOCK_SIZE,
@@ -211,6 +211,9 @@ class SetOfPieces {
             "y": (isHappy ? 0 : this.IMG_BLOCK_SIZE)
         };
     };
+
+    getPieceNo(pieceCode, isBlackTeam) {
+        return (isBlackTeam === true) ? (7 - pieceCode.piece) : pieceCode.piece;
 
     /****************
     * SELECT AND MOVE
@@ -316,7 +319,7 @@ class SetOfPieces {
         let bCanMove = false;
         const colorOfSelectedPiece = setOfPieces.currentPiecePositions["currentTurn"];
 
-        switch (selectedPiece.piece) {
+        switch (setOfPieces.getPieceNo(selectedPiece, colorOfSelectedPiece)) {
             case PIECE_PAWN:
             break;
 

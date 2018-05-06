@@ -21,8 +21,8 @@ def is_my_turn(game_pk, channel_name):
 
 def calculate_new_positions(game_pk, selected_piece, clicked_block, enemy_piece):
     # check if allowable move
-    if not check_if_allowable_move(selected_piece, clicked_block, enemy_piece):
-        return False
+    # if not check_if_allowable_move(selected_piece, clicked_block, enemy_piece):
+    #     return False
 
     game_object = Game.objects.get(pk=game_pk)
     pieces_positions = json.loads(game_object.piecesPositions)
