@@ -62,7 +62,7 @@ def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece)
     if piece_type is PIECE.PAWN.value:
         available_move = check_pawn(selected_piece, clicked_block, enemy_piece)
     elif (piece_type is PIECE.CASTLE_1.value) or (piece_type is PIECE.CASTLE_2.value):
-        pass
+        available_move = check_castle(game_pk, selected_piece, clicked_block, enemy_piece)
     elif piece_type is PIECE.ROUKE.value:
         pass
     elif (piece_type is PIECE.BISHOP_1.value) or (piece_type is PIECE.BISHOP_2.value):
@@ -76,7 +76,7 @@ def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece)
 
 
 def check_pawn(selected_piece, clicked_block, enemy_piece):
-    turn_to_go = 1 if selected_piece["color"] == BLACK_TEAM else -1
+    turn_to_go = get_turn_to_go(selected_piece)
     # 1) can go 2 fields ahead
     if is_black_team(selected_piece) and is_in_col(selected_piece, 1):
         if is_in_col(clicked_block, 2) or is_in_col(clicked_block, 3):
@@ -102,6 +102,24 @@ def check_pawn(selected_piece, clicked_block, enemy_piece):
     return False
 
 
+def check_castle(game_pk, selected_piece, clicked_block, enemy_piece):
+    # 1) Move |
+    if is_in_col(selected_piece, clicked_block["col"]):
+        between = get_all_field_coords_between(selected_piece["row"], clicked_block["row"])
+        for field_row in between:
+            if check_if_any_piece_on_field(game_pk, {"row": field_row, "col": clicked_block["col"]}):
+                return False
+        return True
+    # 2) Move __
+    if is_in_row(selected_piece, clicked_block["row"]):
+        between = get_all_field_coords_between(selected_piece["col"], clicked_block["col"])
+        for field_col in between:
+            if check_if_any_piece_on_field(game_pk, {"col": field_col, "row": clicked_block["row"]}):
+                return False
+        return True
+    return False
+
+
 def is_the_same_field(field_a, field_b):
     if field_a["col"] is field_b["col"] and field_a["row"] == field_b["row"]:
         return True
@@ -112,6 +130,17 @@ def is_enemy_on_field(enemy, field):
     if enemy is None:
         return False
     return is_the_same_field(enemy, field)
+
+
+def check_if_any_piece_on_field(game_pk, field):
+    game_object = Game.objects.get(pk=game_pk)
+    pieces_positions = json.loads(game_object.piecesPositions)
+    colors = ["white", "black"]
+    for color in colors:
+        for piece in pieces_positions[color]:
+            if is_the_same_field(piece, field):
+                return True
+    return False
 
 
 def is_black_team(piece):
@@ -127,7 +156,18 @@ def is_in_col(piece, col_no):
 
 
 def is_none(structure):
-    # TODO is_none structure
     if structure is None:
         return True
     return False
+
+
+def get_turn_to_go(piece):
+    return 1 if piece["color"] == BLACK_TEAM else -1
+
+
+def get_all_field_coords_between(col_1, col_2):
+    if col_1 < col_2:
+        return list(range(col_1 + 1, col_2))
+    elif col_1 > col_2:
+        return list(range(col_2 + 1, col_1))
+    return []
