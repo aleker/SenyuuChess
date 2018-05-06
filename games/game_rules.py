@@ -1,6 +1,7 @@
 from games.models import Game, PIECE
 import json
 
+
 WHITE_TEAM = 'white'
 BLACK_TEAM = 'black'
 
@@ -66,7 +67,7 @@ def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece)
     elif piece_type is PIECE.ROUKE.value:
         available_move = check_rouke(selected_piece, clicked_block)
     elif (piece_type is PIECE.BISHOP_1.value) or (piece_type is PIECE.BISHOP_2.value):
-        pass
+        available_move = check_bishop(game_pk, selected_piece, clicked_block)
     elif piece_type is PIECE.QUEEN.value:
         pass
     elif piece_type is PIECE.KING.value:
@@ -130,6 +131,18 @@ def check_rouke(selected_piece, clicked_block):
     return False
 
 
+def check_bishop(game_pk, selected_piece, clicked_block):
+    col_difference = abs(selected_piece["col"] - clicked_block["col"])
+    row_difference = abs(selected_piece["row"] - clicked_block["row"])
+    if col_difference == row_difference:
+        between = get_all_field_between(selected_piece, clicked_block)
+        for field in between:
+            if check_if_any_piece_on_field(game_pk, field):
+                return False
+        return True
+    return False
+
+
 def is_the_same_field(field_a, field_b):
     if field_a["col"] is field_b["col"] and field_a["row"] == field_b["row"]:
         return True
@@ -180,4 +193,38 @@ def get_all_field_coords_between(col_1, col_2):
         return list(range(col_1 + 1, col_2))
     elif col_1 > col_2:
         return list(range(col_2 + 1, col_1))
+    return []
+
+
+def get_all_field_between(field_1, field_2):
+    difference = abs(field_1["row"] - field_2["row"])
+    if difference <= 1:
+        return []
+    area_chart_data = []
+    if field_1["col"] < field_2["col"]:
+        if field_1["row"] < field_2["row"]:
+            col_list = list(range(field_1["col"] + 1, field_2["col"]))
+            row_list = list(range(field_1["row"] + 1, field_2["row"]))
+            for col, row in zip(col_list, row_list):
+                area_chart_data.append({"col": col, "row": row})
+            return area_chart_data
+        if field_1["row"] > field_2["row"]:
+            col_list = list(range(field_1["col"] + 1, field_2["col"]))
+            row_list = list(range(field_2["row"] + 1, field_1["row"]))
+            for col, row in zip(col_list, reversed(row_list)):
+                area_chart_data.append({"col": col, "row": row})
+            return area_chart_data
+    if field_1["col"] > field_2["col"]:
+        if field_1["row"] < field_2["row"]:
+            col_list = list(range(field_2["col"] + 1, field_1["col"]))
+            row_list = list(range(field_1["row"] + 1, field_2["row"]))
+            for col, row in zip(col_list, reversed(row_list)):
+                area_chart_data.append({"col": col, "row": row})
+            return area_chart_data
+        if field_1["row"] > field_2["row"]:
+            col_list = list(range(field_2["col"] + 1, field_1["col"]))
+            row_list = list(range(field_2["row"] + 1, field_1["row"]))
+            for col, row in zip(col_list, row_list):
+                area_chart_data.append({"col": col, "row": row})
+            return area_chart_data
     return []
