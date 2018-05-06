@@ -39,6 +39,8 @@ def calculate_new_positions(game_pk, selected_piece, clicked_block, enemy_piece)
     pieces_positions[team_color][selected_piece["id"]]["col"] = clicked_block["col"]
     pieces_positions[team_color][selected_piece["id"]]["row"] = clicked_block["row"]
 
+    check = is_check(game_pk, pieces_positions[team_color][selected_piece["id"]])
+
     # change turn
     pieces_positions["currentTurn"] = BLACK_TEAM if pieces_positions["currentTurn"] == WHITE_TEAM else WHITE_TEAM
 
@@ -48,12 +50,20 @@ def calculate_new_positions(game_pk, selected_piece, clicked_block, enemy_piece)
 
     # check if checkmate
     is_checkmate()
-    return pieces_positions
+    return pieces_positions, check
 
 
 def is_checkmate():
     # TODO!! checkmate
     pass
+
+
+def is_check(game_pk, selected_piece_on_new_position):
+    opponents_color = WHITE_TEAM if selected_piece_on_new_position["color"] == BLACK_TEAM else BLACK_TEAM
+    opponents_king = find_piece(game_pk, opponents_color, PIECE.KING.value)
+    if check_if_allowable_move(game_pk, selected_piece_on_new_position, opponents_king, opponents_king):
+        return opponents_color
+    return None
 
 
 def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece):
@@ -241,3 +251,12 @@ def get_all_field_between(field_1, field_2):
                 area_chart_data.append({"col": col, "row": row})
             return area_chart_data
     return []
+
+
+def find_piece(game_pk, color, piece_type):
+    game_object = Game.objects.get(pk=game_pk)
+    pieces_positions = json.loads(game_object.piecesPositions)
+    for piece in pieces_positions[color]:
+        if piece["piece"] == piece_type:
+            return piece
+    return None

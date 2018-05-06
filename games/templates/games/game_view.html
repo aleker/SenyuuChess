@@ -9,8 +9,11 @@
 {% block game_block %}
     <div class="panel-heading">{{ object.game }}</div>
     <div class="panel-body">
-        <div class="alert alert-warning alert-dismissable" style="display:none">
+        <div id="socket-alert" class="alert alert-warning alert-dismissable" style="display:none">
             <strong>Warning!</strong> Game socket closed unexpectedly. Refresh page to reconnect!
+        </div>
+        <div id="check-info" class="alert alert-warning alert-dismissable" style="display:none">
+            <strong>Check! </strong><span>Color</span> protect your King!
         </div>
 {#        TODO move it next to chessboard #}
         <div id="players">

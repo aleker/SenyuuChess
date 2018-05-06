@@ -376,7 +376,6 @@ function updateNoPlayerClasses() {
 }
 
 function changeTurnClass() {
-    // this.currentPiecePositions.currentTurn = (this.currentPiecePositions.currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
     changePlayersTurnClass(setOfPieces.currentPiecePositions["currentTurn"]);
 }
 
@@ -414,6 +413,7 @@ function setSocket() {
             case 'updated_positions_broadcast':
                 console.log("Received updated positions.");
                 console.log("Update positions.");
+                reactOnCheck(data['check']);
                 setOfPieces.updatePiecePositions(data['updatedPositions']);
                 break;
             case 'player_color':
@@ -439,12 +439,20 @@ function setSocket() {
 
     gameSocket.onclose = function(e) {
         console.error('Game socket closed unexpectedly.');
-        $('.alert').show();
+        $('#socket-alert').show();
     };
 }
 
 function sendMessage(jsonMessage) {
     gameSocket.send(JSON.stringify(jsonMessage));
+}
+
+function reactOnCheck(check) {
+    if (check != null) {
+         $('#check-info span').text(check.toUpperCase());
+         $('#check-info').show();
+    }
+    else $('#check-info').hide();
 }
 
 
