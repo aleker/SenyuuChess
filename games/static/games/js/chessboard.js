@@ -214,7 +214,7 @@ class SetOfPieces {
 
     getPieceNo(pieceCode, isBlackTeam) {
         return (isBlackTeam === true) ? (7 - pieceCode.piece) : pieceCode.piece;
-
+    }
     /****************
     * SELECT AND MOVE
     *****************/
