@@ -71,7 +71,7 @@ def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece)
     elif piece_type is PIECE.QUEEN.value:
         pass
     elif piece_type is PIECE.KING.value:
-        pass
+        available_move = check_king(selected_piece, clicked_block)
 
     return available_move
 
@@ -139,6 +139,14 @@ def check_bishop(game_pk, selected_piece, clicked_block):
         for field in between:
             if check_if_any_piece_on_field(game_pk, field):
                 return False
+        return True
+    return False
+
+
+def check_king(selected_piece, clicked_block):
+    col_difference = abs(selected_piece["col"] - clicked_block["col"])
+    row_difference = abs(selected_piece["row"] - clicked_block["row"])
+    if col_difference <= 1 and row_difference <= 1:
         return True
     return False
 
