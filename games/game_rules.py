@@ -57,7 +57,6 @@ def is_checkmate():
 
 
 def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece):
-    # TODO!! allowable move
     available_move = True
     piece_type = selected_piece["piece"]
     if piece_type is PIECE.PAWN.value:
@@ -69,7 +68,7 @@ def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece)
     elif (piece_type is PIECE.BISHOP_1.value) or (piece_type is PIECE.BISHOP_2.value):
         available_move = check_bishop(game_pk, selected_piece, clicked_block)
     elif piece_type is PIECE.QUEEN.value:
-        pass
+        available_move = check_queen(game_pk, selected_piece, clicked_block)
     elif piece_type is PIECE.KING.value:
         available_move = check_king(selected_piece, clicked_block)
 
@@ -141,6 +140,12 @@ def check_bishop(game_pk, selected_piece, clicked_block):
                 return False
         return True
     return False
+
+
+def check_queen(game_pk, selected_piece, clicked_block):
+    result = check_castle(game_pk, selected_piece, clicked_block)
+    if not result:
+        return check_bishop(game_pk, selected_piece, clicked_block)
 
 
 def check_king(selected_piece, clicked_block):
