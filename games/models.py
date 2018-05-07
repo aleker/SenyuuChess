@@ -49,13 +49,11 @@ class Game(models.Model):
     """
     Model representing one instance of the game.
     """
-    PLAYERS_COLORS = (('w', 'White Player'), ('b', 'Black Player'))
-    turn = models.CharField(max_length=15, choices=PLAYERS_COLORS, default="w")
-    white_points = models.IntegerField(blank=False, null=False, default=0)
-    black_points = models.IntegerField(blank=False, null=False, default=0)
+    PLAYERS_COLORS = (('w', 'white'), ('b', 'black'))
     piecesPositions = models.CharField(max_length=500, null=True, blank=True)
     white_player_socket_name = models.CharField(max_length=500, null=True, blank=True, default=None)
     black_player_socket_name = models.CharField(max_length=500, null=True, blank=True, default=None)
+    checkmate_color = models.CharField(max_length=10, null=True, blank=True, default=None, choices=PLAYERS_COLORS)
 
     def __str__(self):
         return 'Game #%s' % self.pk

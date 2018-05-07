@@ -65,15 +65,18 @@ class GameConsumer(AsyncWebsocketConsumer):
             }))
         elif message_type == 'new_move':
             if is_my_turn(self.game_name, self.channel_name):
-                (updated_positions, check) = calculate_new_positions(self.game_name,
-                                                                     text_data_json["selectedPiece"],
-                                                                     text_data_json["clickedBlock"],
-                                                                     text_data_json["enemyPiece"])
+                (updated_positions, check, checkmate) = calculate_new_positions(
+                    self.game_name,
+                    text_data_json["selectedPiece"],
+                    text_data_json["clickedBlock"],
+                    text_data_json["enemyPiece"]
+                )
                 if updated_positions is not False:
                     await self.channel_layer.group_send(self.game_group_name, {
                         'type': 'updated_positions_broadcast',
                         'updatedPositions': updated_positions,
                         'check': check,
+                        'checkmate': checkmate
                     })
         else:
             print("Strange message type!")

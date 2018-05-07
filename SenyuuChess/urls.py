@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url, include
-from games.models import Game
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -26,6 +25,7 @@ urlpatterns = [
 
 def one_time_startup():
     # TODO what with this clearing?
+    from games.models import Game
     games = Game.objects.all()
     for game in games:
         game.white_player_socket_name = None
