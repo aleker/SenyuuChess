@@ -1,3 +1,5 @@
+import itertools
+
 from games.models import Game, PIECE
 import json
 
@@ -79,6 +81,7 @@ def is_checkmate(game_pk, color_in_check, is_in_check):
 def check_if_king_can_run(game_pk, color_in_check):
     game_object = Game.objects.get(pk=game_pk)
     pieces_positions = json.loads(game_object.piecesPositions)
+    opponents_king = find_piece(game_pk, color_in_check, PIECE.KING.value)
     # TODO check_if_king_can_run
     return True
 
