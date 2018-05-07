@@ -7,7 +7,7 @@ Communication with players was implemented using **WebSockets**.
 In main project directory:
 ```commandline
 pip install -r requirements.txt
-python3 manage.py makemigration
+python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 
