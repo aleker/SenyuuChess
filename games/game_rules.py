@@ -41,7 +41,8 @@ def calculate_new_positions(game_pk, selected_piece, clicked_block, enemy_piece)
     pieces_positions[team_color][selected_piece["id"]]["col"] = clicked_block["col"]
     pieces_positions[team_color][selected_piece["id"]]["row"] = clicked_block["row"]
 
-    check = is_check(game_pk, pieces_positions[team_color][selected_piece["id"]])
+    # check if check before SAVE
+    check = is_check(game_pk, team_color)
     if check is selected_piece["color"]:
         # this move makes player's king in check
         return False, None, None
@@ -53,9 +54,11 @@ def calculate_new_positions(game_pk, selected_piece, clicked_block, enemy_piece)
     game_object.piecesPositions = json.dumps(pieces_positions)
     game_object.save()
 
+    # check if check after SAVE
+    check = is_check(game_pk, team_color)
+
     # check if checkmate after SAVE
-    # ADDITIONAL: check if king was beaten
-    checkmate = check_if_king_was_beaten(game_pk)
+    checkmate = check_if_king_was_beaten(game_pk)               # TODO ADDITIONAL: check if king was beaten
     # checkmate = is_checkmate(game_pk, opposite_color, check)
     if checkmate is not None:
         game_object.checkmate_color = checkmate
@@ -64,11 +67,14 @@ def calculate_new_positions(game_pk, selected_piece, clicked_block, enemy_piece)
     return pieces_positions, check, checkmate
 
 
-def is_check(game_pk, selected_piece_on_new_position):
-    opponents_color = WHITE_TEAM if selected_piece_on_new_position["color"] == BLACK_TEAM else BLACK_TEAM
+def is_check(game_pk, attackers_color):
+    game_object = Game.objects.get(pk=game_pk)
+    pieces_positions = json.loads(game_object.piecesPositions)
+    opponents_color = WHITE_TEAM if attackers_color == BLACK_TEAM else BLACK_TEAM
     opponents_king = find_piece(game_pk, opponents_color, PIECE.KING.value)
-    if check_if_allowable_move(game_pk, selected_piece_on_new_position, opponents_king, opponents_king):
-        return opponents_color
+    for piece in pieces_positions[attackers_color]:
+        if check_if_allowable_move(game_pk, piece, opponents_king, opponents_king):
+            return opponents_color
     return None
 
 
@@ -81,9 +87,6 @@ def is_checkmate(game_pk, color_in_check, is_in_check):
 
 
 def check_if_king_can_run(game_pk, color_in_check):
-    game_object = Game.objects.get(pk=game_pk)
-    pieces_positions = json.loads(game_object.piecesPositions)
-    opponents_king = find_piece(game_pk, color_in_check, PIECE.KING.value)
     # TODO check_if_king_can_run
     return True
 
