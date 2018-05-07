@@ -58,6 +58,14 @@ class GameConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message_type = text_data_json['type']
 
+        checkmate = self.check_if_checkmate()
+        if checkmate is not None:
+            await self.channel_layer.group_send(self.game_group_name, {
+                'type': 'checkmate',
+                'checkmate': checkmate,
+            })
+            return
+
         if message_type == 'onOpen':
             await self.send(text_data=json.dumps({
                 'type': 'start_positions',
@@ -96,6 +104,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         # update game object
         self.game_object = Game.objects.get(pk=self.game_name)
         print("Send info about new free spot.")
+        await self.send(text_data=json.dumps(text_data_json))
+
+    async def checkmate(self, text_data_json):
+        self.game_object = Game.objects.get(pk=self.game_name)
+        print("Send checkmate info.")
         await self.send(text_data=json.dumps(text_data_json))
 
     # Free spots checking
@@ -144,3 +157,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game_object.save()
             return 'black'
         return None
+
+    def check_if_checkmate(self):
+        self.game_object = Game.objects.get(pk=self.game_name)
+        return self.game_object.checkmate_color
+
+

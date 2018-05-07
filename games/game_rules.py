@@ -54,7 +54,9 @@ def calculate_new_positions(game_pk, selected_piece, clicked_block, enemy_piece)
     game_object.save()
 
     # check if checkmate after SAVE
-    checkmate = is_checkmate(game_pk, opposite_color, check)
+    # ADDITIONAL: check if king was beaten
+    checkmate = check_if_king_was_beaten(game_pk)
+    # checkmate = is_checkmate(game_pk, opposite_color, check)
     if checkmate is not None:
         game_object.checkmate_color = checkmate
         game_object.save()
@@ -84,6 +86,16 @@ def check_if_king_can_run(game_pk, color_in_check):
     opponents_king = find_piece(game_pk, color_in_check, PIECE.KING.value)
     # TODO check_if_king_can_run
     return True
+
+
+def check_if_king_was_beaten(game_pk):
+    white_king = find_piece(game_pk, "white", PIECE.KING.value)
+    black_king = find_piece(game_pk, "black", PIECE.KING.value)
+    if white_king["status"] == RIP:
+        return "white"
+    if black_king["status"] == RIP:
+        return "black"
+    return None
 
 
 def check_if_allowable_move(game_pk, selected_piece, clicked_block, enemy_piece):

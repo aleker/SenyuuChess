@@ -414,6 +414,7 @@ function setSocket() {
                 console.log("Received updated positions.");
                 console.log("Update positions.");
                 reactOnCheck(data['check']);
+                reactOnCheckMate(data['checkmate']);
                 setOfPieces.updatePiecePositions(data['updatedPositions']);
                 break;
             case 'player_color':
@@ -453,6 +454,14 @@ function reactOnCheck(check) {
          $('#check-info').show();
     }
     else $('#check-info').hide();
+}
+
+function reactOnCheckMate(checkmate) {
+    if (checkmate != null) {
+         $('#checkmate-info span').text(checkmate.toUpperCase());
+         $('#checkmate-info').show();
+    }
+    else $('#checkmate-info').hide();
 }
 
 
