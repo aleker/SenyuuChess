@@ -318,7 +318,7 @@ class SetOfPieces {
         // TODO displayPermittedMoves
         let bCanMove = false;
 
-        switch (SetOfPieces.getPieceNo(selectedPiece, colorOfSelectedPiece)) {
+        switch (SetOfPieces.getPieceNo(selectedPiece, "black")) {
             case PIECE_PAWN:
             break;
 

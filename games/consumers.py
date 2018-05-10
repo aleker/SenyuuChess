@@ -79,6 +79,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     text_data_json["clickedBlock"],
                     text_data_json["enemyPiece"]
                 )
+                self.game_object = Game.objects.get(pk=self.game_name)
                 if updated_positions is not False:
                     await self.channel_layer.group_send(self.game_group_name, {
                         'type': 'updated_positions_broadcast',
